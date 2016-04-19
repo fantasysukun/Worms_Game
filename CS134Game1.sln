@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CS134Game1", "CS134Game1.vcxproj", "{DCEB98F7-A35D-4A11-B930-268672D31480}"
+EndProject
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "GameSetup", "..\GameSetup\GameSetup.isproj", "{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DCEB98F7-A35D-4A11-B930-268672D31480} = {DCEB98F7-A35D-4A11-B930-268672D31480}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CD_ROM|Win32 = CD_ROM|Win32
+		Debug|Win32 = Debug|Win32
+		DVD-5|Win32 = DVD-5|Win32
+		Release|Win32 = Release|Win32
+		SingleImage|Win32 = SingleImage|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.CD_ROM|Win32.ActiveCfg = Release|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.CD_ROM|Win32.Build.0 = Release|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.Debug|Win32.Build.0 = Debug|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.DVD-5|Win32.ActiveCfg = Debug|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.DVD-5|Win32.Build.0 = Debug|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.Release|Win32.ActiveCfg = Release|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.Release|Win32.Build.0 = Release|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.SingleImage|Win32.ActiveCfg = Release|Win32
+		{DCEB98F7-A35D-4A11-B930-268672D31480}.SingleImage|Win32.Build.0 = Release|Win32
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.CD_ROM|Win32.ActiveCfg = CD_ROM
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.CD_ROM|Win32.Build.0 = CD_ROM
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.Debug|Win32.ActiveCfg = DVD-5
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.Debug|Win32.Build.0 = DVD-5
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.DVD-5|Win32.ActiveCfg = DVD-5
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.DVD-5|Win32.Build.0 = DVD-5
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.Release|Win32.ActiveCfg = SingleImage
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.Release|Win32.Build.0 = SingleImage
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.SingleImage|Win32.ActiveCfg = SingleImage
+		{E097C74C-2AB7-4780-A6B2-A1E34E11DDCC}.SingleImage|Win32.Build.0 = SingleImage
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
