@@ -324,7 +324,7 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
-	Static_BackGround = glTexImageTGAFile("ArtResource/final_background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
+	Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 	
 	//NewSprint = glTexImageTGAFile("1.tga", &NewSprintSize[0], &NewSprintSize[1]);
 	projectile_image = glTexImageTGAFile("ArtResource/projectile.tga", &projectileSize[0], &projectileSize[1]);
@@ -828,15 +828,12 @@ int main(void)
 
 		//****** Draw BackGronud ******//
 		
-		//Drawing static background
-		/*
-		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-			&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-			glDrawSprite(Static_BackGround, 0, 0, Static_BackGroundSize[0], Static_BackGroundSize[1]);
-		}
-		*/
 		
-
+		
+		
+		
+		
+		
 		for (int y = 0 ; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
@@ -851,7 +848,12 @@ int main(void)
 			}
 		}
 		
-		
+
+		//Drawing static background
+		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
+			glDrawSprite(Static_BackGround, 0 - camera.positionX, 0 - camera.positionY, Static_BackGroundSize[0], Static_BackGroundSize[1]);
+		}
 		
 
 		if (spriteTex_Current == spriteTex_Left)
