@@ -11,7 +11,7 @@
 GLuint glTexImageTGAFile(const char* filename, int* outWidth, int* outHeight)
 {
     const int BPP = 4;
-    
+	printf("filename: %s\n", filename);
     /* open the file */
     FILE* file = fopen(filename, "rb");
     if (file == NULL) {

@@ -24,7 +24,7 @@
     <ClCompile Include="BackgroundDef.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Static_Background.cpp">
+    <ClCompile Include="StaticBackground.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="BackgroundDef.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Static_Background.h">
+    <ClInclude Include="StaticBackground.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
