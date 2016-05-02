@@ -172,6 +172,132 @@ bool AABB(float x, float y, float w, float h, float x2, float y2, float w2, floa
 	return true;
 }
 
+// Added pixel perfect detection - Kevin Lai
+bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
+
+	// Intersection: X, Y, Width, Height
+	// Left, Top, Right, Bottom
+	float intersectionX, intersectionY, intersectionW, intersectionH;
+
+	if (x > x2){
+		intersectionX = x;
+	}
+	else{
+		intersectionX = x2;
+	}
+	if ( (x + w) > (x2 + w2) ){
+		// Simplified version of (x2 + w2) - w2
+		intersectionW = w2;
+	}
+	else{
+		// Simplified version of (x + w) - w
+		intersectionW = w;
+	}
+	if (y < y2){
+		intersectionY = y2;
+	}
+	else{
+		intersectionY = y;
+	}
+	if ( (y + h) < (y2 + h2) ){
+		intersectionH = (y + h) - y2;
+	}
+	else{
+		intersectionH = (y2 + h2) - y;
+	}
+
+	unsigned char* object1 = getBytes(filename1);
+	unsigned char* object2 = getBytes(filename2);
+
+	for (int i = 0; i < intersectionH; ++i){
+
+		for (int j = 0; j < intersectionW; ++j){
+
+			if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+unsigned char* getBytes(const char* filename){
+
+	const int BPP = 4;
+
+	/* open the file */
+	FILE* file = fopen(filename, "rb");
+	if (file == NULL) {
+		fprintf(stderr, "File: %s -- Could not open for reading.\n", filename);
+		return 0;
+	}
+
+	/* skip first two bytes of data we don't need */
+	fseek(file, 2, SEEK_CUR);
+
+	/* read in the image type.  For our purposes the image type should
+	* be either a 2 or a 3. */
+	unsigned char imageTypeCode;
+	fread(&imageTypeCode, 1, 1, file);
+	if (imageTypeCode != 2 && imageTypeCode != 3) {
+		fclose(file);
+		fprintf(stderr, "File: %s -- Unsupported TGA type: %d\n", filename, imageTypeCode);
+		return 0;
+	}
+
+	/* skip 9 bytes of data we don't need */
+	fseek(file, 9, SEEK_CUR);
+
+	/* read image dimensions */
+	int imageWidth = 0;
+	int imageHeight = 0;
+	int bitCount = 0;
+	fread(&imageWidth, sizeof(short), 1, file);
+	fread(&imageHeight, sizeof(short), 1, file);
+	fread(&bitCount, sizeof(unsigned char), 1, file);
+	fseek(file, 1, SEEK_CUR);
+
+	/* allocate memory for image data and read it in */
+	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
+
+	// Added new boolean array called collision - Kevin Lai
+	bool** collision = new bool*[imageWidth];
+	for (int i = 0; i < imageWidth; ++i){
+		collision[i] = new bool[imageHeight];
+	}
+
+	/* read in data */
+	if (bitCount == 32) {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = fgetc(file);
+		}
+
+		// Added this as well. Not sure if it is needed for else statement also. - Kevin Lai
+		// Also record the alpha being zero or non-zero
+		bool isNonZero = (bytes[it * BPP + 3] != 0);
+		collision[it % imageWidth][it / imageWidth] = isNonZero;
+
+	}
+	else {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = 255;
+		}
+	}
+
+	fclose(file);
+
+	return bytes;
+}
+
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
 	player.positionY = PlayerPosY;
