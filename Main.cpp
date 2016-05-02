@@ -173,54 +173,6 @@ bool AABB(float x, float y, float w, float h, float x2, float y2, float w2, floa
 }
 
 // Added pixel perfect detection - Kevin Lai
-bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
-
-	// Intersection: X, Y, Width, Height
-	// Left, Top, Right, Bottom
-	float intersectionX, intersectionY, intersectionW, intersectionH;
-
-	if (x > x2){
-		intersectionX = x;
-	}
-	else{
-		intersectionX = x2;
-	}
-	if ( (x + w) > (x2 + w2) ){
-		// Simplified version of (x2 + w2) - w2
-		intersectionW = w2;
-	}
-	else{
-		// Simplified version of (x + w) - w
-		intersectionW = w;
-	}
-	if (y < y2){
-		intersectionY = y2;
-	}
-	else{
-		intersectionY = y;
-	}
-	if ( (y + h) < (y2 + h2) ){
-		intersectionH = (y + h) - y2;
-	}
-	else{
-		intersectionH = (y2 + h2) - y;
-	}
-
-	unsigned char* object1 = getBytes(filename1);
-	unsigned char* object2 = getBytes(filename2);
-
-	for (int i = 0; i < intersectionH; ++i){
-
-		for (int j = 0; j < intersectionW; ++j){
-
-			if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
 
 unsigned char* getBytes(const char* filename){
 
@@ -297,6 +249,57 @@ unsigned char* getBytes(const char* filename){
 
 	return bytes;
 }
+
+bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
+
+	// Intersection: X, Y, Width, Height
+	// Left, Top, Right, Bottom
+	float intersectionX, intersectionY, intersectionW, intersectionH;
+
+	if (x > x2){
+		intersectionX = x;
+	}
+	else{
+		intersectionX = x2;
+	}
+	if ( (x + w) > (x2 + w2) ){
+		// Simplified version of (x2 + w2) - w2
+		intersectionW = w2;
+	}
+	else{
+		// Simplified version of (x + w) - w
+		intersectionW = w;
+	}
+	if (y < y2){
+		intersectionY = y2;
+	}
+	else{
+		intersectionY = y;
+	}
+	if ( (y + h) < (y2 + h2) ){
+		intersectionH = (y + h) - y2;
+	}
+	else{
+		intersectionH = (y2 + h2) - y;
+	}
+
+	unsigned char* object1 = getBytes(filename1);
+	unsigned char* object2 = getBytes(filename2);
+
+	for (int i = 0; i < intersectionH; ++i){
+
+		for (int j = 0; j < intersectionW; ++j){
+
+			if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+
 
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;

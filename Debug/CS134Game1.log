@@ -1,39 +1,9 @@
-﻿Build started 4/29/2016 8:25:44 PM.
-     1>Project "D:\Users\Shadow\Documents\GitHub\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp
-         Main.cpp
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(103): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(556): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(687): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(693): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(706): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(709): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(720): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(723): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(733): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(735): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(742): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(744): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(756): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(792): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(833): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(869): warning C4244: '=' : conversion from 'Uint32' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(946): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(956): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(964): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(971): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(989): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(993): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(999): warning C4018: '<' : signed/unsigned mismatch
-     1>d:\users\shadow\documents\github\worms_game\main.cpp(1003): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Users\Shadow\Documents\GitHub\worms_game\Debug\CS134Game1.exe" /INCREMENTAL /NOLOGO SDL2.lib opengl32.lib glu32.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Users\Shadow\Documents\GitHub\worms_game\Debug\CS134Game1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Users\Shadow\Documents\GitHub\worms_game\Debug\CS134Game1.lib" /MACHINE:X86 Debug\BackgroundDef.obj
-         Debug\Main.obj
-         Debug\DrawUtils.obj
-         CS134Game1.vcxproj -> D:\Users\Shadow\Documents\GitHub\worms_game\Debug\CS134Game1.exe
-     1>Done Building Project "D:\Users\Shadow\Documents\GitHub\worms_game\CS134Game1.vcxproj" (Build target(s)).
+﻿Build started 5/1/2016 5:40:16 PM.
+     1>Project "C:\Users\Kun Su\Documents\GitHub\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         CS134Game1.vcxproj -> C:\Users\Kun Su\Documents\GitHub\worms_game\Debug\CS134Game1.exe
+     1>Done Building Project "C:\Users\Kun Su\Documents\GitHub\worms_game\CS134Game1.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.95
+Time Elapsed 00:00:00.06
