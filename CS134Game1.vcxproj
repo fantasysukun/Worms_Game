@@ -77,15 +77,12 @@
     <ClCompile Include="BackgroundDef.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="src\DrawUtils.c" />
+    <ClCompile Include="Static_Background.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundDef.h" />
     <ClInclude Include="src\DrawUtils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Debug\BackGround.tga" />
-    <Image Include="Debug\BackGround2.tga" />
-    <Image Include="Mega-Man-transparent.tga" />
+    <ClInclude Include="Static_Background.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

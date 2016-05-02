@@ -1,7 +1,7 @@
 ﻿/*********************************************************************
-How to compile this on different platforms:
-version - 4.13.2016
-gcc Main.c DrawUtils.c `pkg-config --cflags --libs sdl2 gl glew` -o CFramework
+Worms Game
+version - may.1.2016
+Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
 #define SDL_MAIN_HANDLED
@@ -25,25 +25,32 @@ unsigned char kbPrevState[SDL_NUM_SCANCODES] = { 0 };
 const unsigned char* kbState = NULL;
 
 
-/* position of the sprite */
-//float spritePos[2] = { 526, 451 };
-//float BackgroundPos[2] = { 0, 0 };
 float projectilePos[2] = { 526, 451 };
 /* Texture for the sprite */
-GLuint spriteTex_Right;
-GLuint spriteTex_Left;
-GLuint spriteTex_Current;
 
-GLuint BackGround;
-GLuint BackGround_bottom;
-GLuint tiles[20];
+//Static background initialize (Layer 1)
+GLuint Static_BackGround[1600];
 
+//Destroyable  background initialize (Layer 2)
+GLuint Destroyable_BackGround[1600];
+
+//player initialize (Layer 3)
 GLuint player_Walking_Left[2];
 GLuint player_Walking_Right[2];
-GLuint NewSprint;
 
+//Enemy initialize (Layer 3)
+GLuint Enemy_Right;
+GLuint Enemy_Left;
+
+//Effect initialize (Layer 3)
 GLuint projectile_image;
-GLuint Static_BackGround;
+
+//Other initialize 
+GLuint NewSprint;
+GLuint spriteTex_Current;
+GLuint BackGround_bottom;
+GLuint BackGround[20];
+
 
 /* size of the sprite */
 int spriteSize[2];
@@ -437,23 +444,24 @@ int main(void)
 
 
 	/* Load the texture */
-	spriteTex_Right = glTexImageTGAFile("ArtResource/Mega-Man-transparent.tga", &spriteSize[0], &spriteSize[1]);
-	spriteTex_Left = glTexImageTGAFile("ArtResource/Mega-Man-transparent_Left.tga", &spriteSize[0], &spriteSize[1]);
-	spriteTex_Current = spriteTex_Right;
+	Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
+	Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
+	spriteTex_Current = Enemy_Right;
 	kbState = SDL_GetKeyboardState(NULL);
 
-	BackGround = glTexImageTGAFile("ArtResource/15.tga", NULL, NULL);
+
 	//BackGround_bottom = glTexImageTGAFile("Background_bottom.tga", NULL, NULL);
-	tiles[0] = glTexImageTGAFile("ArtResource/13.tga", NULL, NULL);
-	tiles[1] = glTexImageTGAFile("ArtResource/14.tga", NULL, NULL);
-	tiles[2] = glTexImageTGAFile("ArtResource/4.tga", NULL, NULL);
+	BackGround[0] = glTexImageTGAFile("ArtResource/13.tga", NULL, NULL);
+	BackGround[1] = glTexImageTGAFile("ArtResource/14.tga", NULL, NULL);
+	BackGround[2] = glTexImageTGAFile("ArtResource/4.tga", NULL, NULL);
+	BackGround[3] = glTexImageTGAFile("ArtResource/Static_Background1.tga", NULL, NULL);
 
 	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Left.tga", NULL, NULL);
 	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Left_2.tga", NULL, NULL);
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
-	Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
+	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 	
 	//NewSprint = glTexImageTGAFile("1.tga", &NewSprintSize[0], &NewSprintSize[1]);
 	projectile_image = glTexImageTGAFile("ArtResource/projectile.tga", &projectileSize[0], &projectileSize[1]);
@@ -595,25 +603,10 @@ int main(void)
 				Projectile projectile = projectilesVector.back();
 				projectile.posX = player.positionX;
 				projectile.posY = player.positionY;
-				/*
-				printf("\nprojectileX: %f", projectile.posX);
-				printf("\nprojectileY: %f", projectile.posY);
-				printf("\nprojectileSpeed: %f", projectile.speed);
-				printf("\nprojectile.velocityX: %f", projectile.velocityX);
-				printf("\nprojectile.velocityY: %f", projectile.velocityY);
-				*/
+				
 				projectile.SpawnTime = curFrameNS;
 				projectilesVector.pop_back();
-				/*
-				printf("\n*******************************************************");
-				printf("\nprojectileX: %f", projectile.posX);
-				printf("\nprojectileY: %f", projectile.posY);
-				printf("\nprojectileSpeed: %f", projectile.speed);
-				printf("\nprojectile.velocityX: %f", projectile.velocityX);
-				printf("\nprojectile.velocityY: %f", projectile.velocityY);
-				*/
-				//printf("\n\n!!!!!!!!!!!!!!!!!!!!@@SpawnTime: %d", projectile.SpawnTime);
-				//int Current_ProjectileArrayIndex = 
+				
 
 
 				float slope = std::abs(std::atan((mousePosY - projectile.posY) / (mousePosX - projectile.posX)));
@@ -633,14 +626,7 @@ int main(void)
 
 				DrawProjectiles.push_back(projectile);
 
-				/*
-				printf("\n*******************************************************");
-				printf("\nprojectileX: %f", projectile.posX);
-				printf("\nprojectileY: %f", projectile.posY);
-				printf("\nprojectileSpeed: %f", projectile.speed);
-				printf("\nprojectile.velocityX: %f", projectile.velocityX);
-				printf("\nprojectile.velocityY: %f", projectile.velocityY);
-				*/
+				
 			}
 			//printf("\n\n RUNnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: %d", SDL_GetTicks());
 		}
@@ -906,14 +892,14 @@ int main(void)
 			if (player.positionX > 0 + 1) {
 				player.positionX -= offset;
 				SetTheCameraToMiddle("LEFT");
-				spriteTex_Current = spriteTex_Left;
+				spriteTex_Current = Enemy_Left;
 			}
 		}
 		if (kbState[SDL_SCANCODE_RIGHT]) {
 			if (player.positionX < 1440 - spriteSize[0]) {
 				player.positionX += offset;
 				SetTheCameraToMiddle("RIGHT");
-				spriteTex_Current = spriteTex_Right;
+				spriteTex_Current = Enemy_Right;
 			}
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
@@ -971,28 +957,32 @@ int main(void)
 				// !!!!!!!!!! NEED Logic Checking !!!!!!!!!! 
 				if (camera.positionY / 36 <= y + 11&& y <= camera.positionY / 36 + 15		//display image on-screen only
 					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
-					glDrawSprite(tiles[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
+					glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
 
 				}
 			}
 		}
 		
 
-		//Drawing static background
+		//Static background drawing (Layer 1)
+		/*
 		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
 			glDrawSprite(Static_BackGround, 0 - camera.positionX, 0 - camera.positionY, Static_BackGroundSize[0], Static_BackGroundSize[1]);
 		}
+		*/
 		
+		//Destroyable background drawing (Layer 2)
 
-		if (spriteTex_Current == spriteTex_Left)
+		//Sprite drawing (Layer 3)
+		if (spriteTex_Current == Enemy_Left)
 		{
 			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
 				animDraw(player_Walking_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime);
 			}
 		}
-		if (spriteTex_Current == spriteTex_Right)
+		if (spriteTex_Current == Enemy_Right)
 		{
 			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
@@ -1000,30 +990,24 @@ int main(void)
 			}
 		}
 
-		
-
-		
-
-		//WalkPathPositionArray[0].positionX
-
-		
-		
-		
+		//Camera drawing (Layer 3)
 
 		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
 			//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
 			if (sprite1_Alive) {
-				glDrawSprite(spriteTex_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
+				glDrawSprite(Enemy_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
 				printf("\nCurrent player.positionX: %f", player.positionX);
 			}
 			if (sprite2_Alive) {
-				glDrawSprite(spriteTex_Right, EnemyTwo.positionX - camera.positionX, EnemyTwo.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
+				glDrawSprite(Enemy_Right, EnemyTwo.positionX - camera.positionX, EnemyTwo.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
 			}
 		}
 		//glDrawSprite(projectile_image, player.positionX + 5 - camera.positionX, player.positionY + 15 - camera.positionY, projectileSize[0], projectileSize[1]);
 		
-		//printf("ProjectileArrayIndex ++");
+		//Weapon drawing (Layer 3)
+
+		//Effect drawing (Layer 3)
 		for (int i = 0; i < DrawProjectiles.size(); i++) {
 			if (camera.positionY <= DrawProjectiles[i].posY && DrawProjectiles[i].posY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= DrawProjectiles[i].posX && DrawProjectiles[i].posX <= camera.positionX + 640) {
@@ -1032,12 +1016,10 @@ int main(void)
 			}
 		}
 
-		//Drawing static background
-		//if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-		//	&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-		
-		//}
-		/* Present to the player */
+		//Water drawing (Layer 4)
+
+		//UI drawing (Layer 5)
+
 		SDL_GL_SwapWindow(window);
 	}
 
