@@ -117,10 +117,21 @@ typedef struct Camera
 }Camera;
 Camera camera;
 
+typedef struct Character
+{
+	int health;
+	char name[16];
+	float posX;
+	float posY;
+
+}Character;
+
+//modified player to have an array of 4 characters - Marvin
 typedef struct Player
 {
 	float positionX = 526.0f;
 	float positionY = 451.0f;
+	Character characters[3];
 
 }Player;
 Player player;
