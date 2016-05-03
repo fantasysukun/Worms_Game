@@ -227,9 +227,11 @@ bool AABB(float x, float y, float w, float h, float x2, float y2, float w2, floa
 	return true;
 }
 
-// Added pixel perfect detection - Kevin Lai
-
-unsigned char* getBytes(const char* filename){
+/*
+	Obtains the alpha array of the image file.
+	- Kevin Lai
+*/
+bool* getBytes(const char* filename){
 
 	const int BPP = 4;
 
@@ -269,10 +271,7 @@ unsigned char* getBytes(const char* filename){
 	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
 
 	// Added new boolean array called collision - Kevin Lai
-	bool** collision = new bool*[imageWidth];
-	for (int i = 0; i < imageWidth; ++i){
-		collision[i] = new bool[imageHeight];
-	}
+	bool* collision = new bool[imageWidth * imageHeight];
 
 	/* read in data */
 	if (bitCount == 32) {
@@ -287,7 +286,7 @@ unsigned char* getBytes(const char* filename){
 		// Added this as well. Not sure if it is needed for else statement also. - Kevin Lai
 		// Also record the alpha being zero or non-zero
 		bool isNonZero = (bytes[it * BPP + 3] != 0);
-		collision[it % imageWidth][it / imageWidth] = isNonZero;
+		collision[it] = isNonZero;
 
 	}
 	else {
@@ -302,13 +301,19 @@ unsigned char* getBytes(const char* filename){
 
 	fclose(file);
 
-	return bytes;
+	return collision;
 }
 
+/*
+	Added pixel perfect detection
+	- Kevin Lai
+*/
 bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
 
-	// Intersection: X, Y, Width, Height
-	// Left, Top, Right, Bottom
+	/*
+		Intersection: X, Y, Width, Height
+		Left, Top, Right, Bottom
+	*/
 	float intersectionX, intersectionY, intersectionW, intersectionH;
 
 	if (x > x2){
@@ -318,13 +323,20 @@ bool pixelPerfect(const char* filename1, const char* filename2, float x, float y
 		intersectionX = x2;
 	}
 	if ( (x + w) > (x2 + w2) ){
-		// Simplified version of (x2 + w2) - w2
-		intersectionW = w2;
+		/* 
+			Intersection end point = (x2 + w2), intersection start point = intersectionX
+			Simplified version of (intersection end point - intersection start point) = (x2 + w2) - intersectionX
+		*/
+		intersectionW = (x2 + w2) - intersectionX;
 	}
 	else{
-		// Simplified version of (x + w) - w
-		intersectionW = w;
+		/*
+			Intersection end point = (x + w), intersection start point = intersectionX
+			Simplified version of (intersection end point - intersection start point) = (x + w) - intersectionX
+		*/
+		intersectionW = (x + w) - intersectionX;
 	}
+
 	if (y < y2){
 		intersectionY = y2;
 	}
@@ -332,20 +344,45 @@ bool pixelPerfect(const char* filename1, const char* filename2, float x, float y
 		intersectionY = y;
 	}
 	if ( (y + h) < (y2 + h2) ){
-		intersectionH = (y + h) - y2;
+		/*
+			Intersection end point = (y + h), intersection start point = intersectionY
+			Simplified version of (intersection end point - intersection start point) = (y + h) - intersectionY
+		*/
+		intersectionH = (y + h) - intersectionY;
 	}
 	else{
-		intersectionH = (y2 + h2) - y;
+		/*
+			Intersection end point = (y2 + h2), intersection start point = intersectionY
+			Simplified version of (intersection end point - intersection start point) = (y2 + h2) - intersectionY
+		*/
+		intersectionH = (y2 + h2) - intersectionY;
 	}
 
-	unsigned char* object1 = getBytes(filename1);
-	unsigned char* object2 = getBytes(filename2);
+	// The alpha array of each object involved in the collision
+	bool* object1 = getBytes(filename1);
+	bool* object2 = getBytes(filename2);
+
+	float offsetX = intersectionX - x, offsetX2 = intersectionX - x2, offsetY = intersectionY - y, offsetY2 = intersectionY - y2;
 
 	for (int i = 0; i < intersectionH; ++i){
 
+		float tempY = i + offsetY;
+		float tempY2 = i + offsetY2;
+
 		for (int j = 0; j < intersectionW; ++j){
 
-			if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
+			float tempX = j + offsetX;
+			float tempX2 = j + offsetX2;
+
+			//if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
+			//	return true;
+			//}
+
+			/*
+				Alpha array of each object is used in pixel perfect collision detection.
+				If the alpha's of both objects are 1, then there is a collision
+			*/
+			if (object1[(int)(w * tempY + tempX)] & object2[(int)(w2 * tempY2 + tempX2)]){
 				return true;
 			}
 		}
