@@ -123,6 +123,7 @@ typedef struct Character
 	char name[16];
 	float posX;
 	float posY;
+	bool* CollisionDetectionArray; //set the getbit for this array
 
 }Character;
 
@@ -131,10 +132,12 @@ typedef struct Player
 {
 	float positionX = 526.0f;
 	float positionY = 451.0f;
-	Character characters[3];
+	Character characters[4];
 
 }Player;
 Player player;
+Player playerOne, playerTwo;
+
 
 //Enemy Position setup
 typedef struct Enemy
@@ -144,8 +147,7 @@ typedef struct Enemy
 	int WalkingPosition;
 
 }Enemy;
-Enemy EnemyOne;
-Enemy EnemyTwo;
+Enemy EnemyOne, EnemyTwo;
 
 /*
 void updatePlayerPos(float x, float y) {
