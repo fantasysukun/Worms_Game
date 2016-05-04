@@ -1,6 +1,6 @@
 ﻿/*********************************************************************
 Worms Game
-Version - May 2, 2016
+version - may.1.2016
 Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
@@ -12,13 +12,8 @@ Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 #include<assert.h>
 #include <cmath>
 #include <vector>
-#include<string>
-#include<iostream>
-#include <stdio.h> 
 #include"DrawUtils.h"
 #include"BackgroundDef.h"
-#include"StaticBackground.h"
-using namespace std;
 
 /* Set this to true to force the game to exit */
 char shouldExit = 0;
@@ -77,10 +72,15 @@ bool sprite1_Alive = true;
 bool sprite2_Alive = false;
 int CurrentMovementNumber = 0;
 float gravity = 0.5f;
+// NEW thing need to add
+/*
+bool usGrounded; // Check the player is grounded or not
+float yVelocity; // This is the velocity in y-xias.
+float jumpTimeRemaining
+
+*/
 
 
-//Sprite update and display function. This function need to be change to two spile function. 
-//one for update with delta time, one for drawing.
 void animDraw(GLuint textures[], float x, float y, float w, float h, float deltaTime)
 {
 	/*
@@ -104,9 +104,9 @@ void animDraw(GLuint textures[], float x, float y, float w, float h, float delta
 		else {
 			curFrame = 0;
 		}
-		
+
 	}
-	
+
 	glDrawSprite(textures[curFrame], x, y, w, h);
 }
 
@@ -117,10 +117,21 @@ typedef struct Camera
 }Camera;
 Camera camera;
 
+typedef struct Character
+{
+	int health;
+	char name[16];
+	float posX;
+	float posY;
+
+}Character;
+
+//modified player to have an array of 4 characters - Marvin
 typedef struct Player
 {
 	float positionX = 526.0f;
 	float positionY = 451.0f;
+	Character characters[3];
 
 }Player;
 Player player;
@@ -138,7 +149,7 @@ Enemy EnemyTwo;
 
 /*
 void updatePlayerPos(float x, float y) {
-	player.positionX = x;
+player.positionX = x;
 }
 */
 typedef struct Projectile
@@ -164,7 +175,7 @@ void updateProjectile(Projectile* p, float dt)
 //Need to double check
 bool AABB(float x, float y, float w, float h, float x2, float y2, float w2, float h2)
 {
-	if (x > x2 + w2) { 
+	if (x > x2 + w2) {
 		return false;
 	}
 	if (x + w < x2) {
@@ -179,11 +190,9 @@ bool AABB(float x, float y, float w, float h, float x2, float y2, float w2, floa
 	return true;
 }
 
-/*
-	Obtains the alpha array of the image file.
-	- Kevin Lai
-*/
-bool* getBytes(const char* filename){
+// Added pixel perfect detection - Kevin Lai
+
+unsigned char* getBytes(const char* filename){
 
 	const int BPP = 4;
 
@@ -223,7 +232,10 @@ bool* getBytes(const char* filename){
 	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
 
 	// Added new boolean array called collision - Kevin Lai
-	bool* collision = new bool[imageWidth * imageHeight];
+	bool** collision = new bool*[imageWidth];
+	for (int i = 0; i < imageWidth; ++i){
+		collision[i] = new bool[imageHeight];
+	}
 
 	/* read in data */
 	if (bitCount == 32) {
@@ -238,7 +250,7 @@ bool* getBytes(const char* filename){
 		// Added this as well. Not sure if it is needed for else statement also. - Kevin Lai
 		// Also record the alpha being zero or non-zero
 		bool isNonZero = (bytes[it * BPP + 3] != 0);
-		collision[it] = isNonZero;
+		collision[it % imageWidth][it / imageWidth] = isNonZero;
 
 	}
 	else {
@@ -253,19 +265,13 @@ bool* getBytes(const char* filename){
 
 	fclose(file);
 
-	return collision;
+	return bytes;
 }
 
-/*
-	Added pixel perfect detection
-	- Kevin Lai
-*/
 bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
 
-	/*
-		Intersection: X, Y, Width, Height
-		Left, Top, Right, Bottom
-	*/
+	// Intersection: X, Y, Width, Height
+	// Left, Top, Right, Bottom
 	float intersectionX, intersectionY, intersectionW, intersectionH;
 
 	if (x > x2){
@@ -274,67 +280,35 @@ bool pixelPerfect(const char* filename1, const char* filename2, float x, float y
 	else{
 		intersectionX = x2;
 	}
-	if ( (x + w) > (x2 + w2) ){
-		/* 
-			Intersection end point = (x2 + w2), intersection start point = intersectionX
-			Simplified version of (intersection end point - intersection start point) = (x2 + w2) - intersectionX
-		*/
-		intersectionW = (x2 + w2) - intersectionX;
+	if ((x + w) > (x2 + w2)){
+		// Simplified version of (x2 + w2) - w2
+		intersectionW = w2;
 	}
 	else{
-		/*
-			Intersection end point = (x + w), intersection start point = intersectionX
-			Simplified version of (intersection end point - intersection start point) = (x + w) - intersectionX
-		*/
-		intersectionW = (x + w) - intersectionX;
+		// Simplified version of (x + w) - w
+		intersectionW = w;
 	}
-
 	if (y < y2){
 		intersectionY = y2;
 	}
 	else{
 		intersectionY = y;
 	}
-	if ( (y + h) < (y2 + h2) ){
-		/*
-			Intersection end point = (y + h), intersection start point = intersectionY
-			Simplified version of (intersection end point - intersection start point) = (y + h) - intersectionY
-		*/
-		intersectionH = (y + h) - intersectionY;
+	if ((y + h) < (y2 + h2)){
+		intersectionH = (y + h) - y2;
 	}
 	else{
-		/*
-			Intersection end point = (y2 + h2), intersection start point = intersectionY
-			Simplified version of (intersection end point - intersection start point) = (y2 + h2) - intersectionY
-		*/
-		intersectionH = (y2 + h2) - intersectionY;
+		intersectionH = (y2 + h2) - y;
 	}
 
-	// The alpha array of each object involved in the collision
-	bool* object1 = getBytes(filename1);
-	bool* object2 = getBytes(filename2);
-
-	float offsetX = intersectionX - x, offsetX2 = intersectionX - x2, offsetY = intersectionY - y, offsetY2 = intersectionY - y2;
+	unsigned char* object1 = getBytes(filename1);
+	unsigned char* object2 = getBytes(filename2);
 
 	for (int i = 0; i < intersectionH; ++i){
 
-		float tempY = i + offsetY;
-		float tempY2 = i + offsetY2;
-
 		for (int j = 0; j < intersectionW; ++j){
 
-			float tempX = j + offsetX;
-			float tempX2 = j + offsetX2;
-
-			//if ((object1[i*j] << ((int)(w - intersectionW)*32) ) & object2[i*j]){
-			//	return true;
-			//}
-
-			/*
-				Alpha array of each object is used in pixel perfect collision detection.
-				If the alpha's of both objects are 1, then there is a collision
-			*/
-			if (object1[(int)(w * tempY + tempX)] & object2[(int)(w2 * tempY2 + tempX2)]){
+			if ((object1[i*j] << ((int)(w - intersectionW) * 32)) & object2[i*j]){
 				return true;
 			}
 		}
@@ -371,7 +345,7 @@ void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASize
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
 			if (ObjectAPosY < ObjectBPosY + ObjectBSizeY && ObjectAPosY + ObjectASizeY > ObjectBPosY + ObjectBSizeY) {
-			   //(ObjectAPosY < ObjectBPosY && ObjectAPosY + ObjectASizeY > ObjectBPosY && ObjectAPosY + ObjectASizeY < ObjectBPosY + ObjectASizeY
+				//(ObjectAPosY < ObjectBPosY && ObjectAPosY + ObjectASizeY > ObjectBPosY && ObjectAPosY + ObjectASizeY < ObjectBPosY + ObjectASizeY
 				ObjectAPosY += ObjectBPosY + ObjectBSizeY - ObjectAPosY;
 				camera.positionY += offset;
 			}
@@ -411,11 +385,11 @@ void SetTheCameraToMiddle(char angle[]) {
 	}
 }
 
-typedef struct WalkPathPosition 
+typedef struct WalkPathPosition
 {
 	float positionX;
 	float positionY;
-	
+
 }WalkPathPosition;
 
 WalkPathPosition WalkPathPositionOne;
@@ -425,25 +399,7 @@ WalkPathPosition WalkPathPositionFour;
 
 WalkPathPosition WalkPathPositionArray[];
 
-//Load the whole static background
-void LoadStatic_Background() {
-	int count = 0;
-	char Static_Background_Name[50];
-	for (int y = 0; y < 40; y++)
-	{
-		for (int x = 0; x < 40; x++)
-		{
-			sprintf_s(Static_Background_Name, sizeof Static_Background_Name, "ArtResource/Static_Background%d.tga", count+1);
-			try {
-				Static_BackGround[count] = glTexImageTGAFile(Static_Background_Name, &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
-				count++;
-			}
-			catch (exception e) {
 
-			}
-		}
-	}
-}
 
 //***************** Main function *****************
 int main(void)
@@ -485,7 +441,7 @@ int main(void)
 		SDL_Quit();
 		return 1;
 	}
-	 
+
 	/* Setup OpenGL state */
 	glViewport(0, 0, 640, 480);
 	glMatrixMode(GL_PROJECTION);
@@ -494,8 +450,8 @@ int main(void)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	
-	
+
+
 
 
 	/* Load the texture */
@@ -516,10 +472,8 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
-	LoadStatic_Background();
-	
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
-	
+
 	//NewSprint = glTexImageTGAFile("1.tga", &NewSprintSize[0], &NewSprintSize[1]);
 	projectile_image = glTexImageTGAFile("ArtResource/projectile.tga", &projectileSize[0], &projectileSize[1]);
 	/* Time setting */
@@ -558,7 +512,7 @@ int main(void)
 	Projectile p17;
 	Projectile p18;
 	Projectile p19;
-	Projectile p20; 
+	Projectile p20;
 	Projectile p21;
 	Projectile p22;
 	Projectile p23;
@@ -588,7 +542,7 @@ int main(void)
 	projectilesVector.push_back(p17);
 	projectilesVector.push_back(p18);
 	projectilesVector.push_back(p19);
-	projectilesVector.push_back(p20); 
+	projectilesVector.push_back(p20);
 	projectilesVector.push_back(p21);
 	projectilesVector.push_back(p22);
 	projectilesVector.push_back(p23);
@@ -660,10 +614,10 @@ int main(void)
 				Projectile projectile = projectilesVector.back();
 				projectile.posX = player.positionX;
 				projectile.posY = player.positionY;
-				
+
 				projectile.SpawnTime = curFrameNS;
 				projectilesVector.pop_back();
-				
+
 
 
 				float slope = std::abs(std::atan((mousePosY - projectile.posY) / (mousePosX - projectile.posX)));
@@ -683,7 +637,7 @@ int main(void)
 
 				DrawProjectiles.push_back(projectile);
 
-				
+
 			}
 			//printf("\n\n RUNnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: %d", SDL_GetTicks());
 		}
@@ -787,7 +741,7 @@ int main(void)
 					}
 				}
 			}
-		
+
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
 				if (sprite2_Alive) {
@@ -823,7 +777,7 @@ int main(void)
 			if (sprite1_Alive) {
 
 				//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]);
-				
+
 				if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]))
 				{
 					if (kbState[SDL_SCANCODE_LEFT]) {
@@ -856,7 +810,7 @@ int main(void)
 						}
 					}
 				}
-				
+
 			}
 
 			if (sprite2_Alive) {
@@ -900,31 +854,31 @@ int main(void)
 				player.positionY -= player.positionY + spriteSize[1] - 1296;
 			}
 			//
-			
+
 			CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
 			/*
 			if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 468, 936, 36*3, 36*3))
 			{
-				if (kbState[SDL_SCANCODE_LEFT]) {
-					if (player.positionX > 426 && player.positionX + spriteSize[0] > 426 + spriteSize[0]) {
-						player.positionX += 426 + spriteSize[0] - player.positionX;
-					}
-				}
-				if (kbState[SDL_SCANCODE_RIGHT]) {
-					if (player.positionX < 426 && player.positionX + spriteSize[0] > 426 && player.positionX + spriteSize[0] < 426 + spriteSize[0]) {
-						player.positionX -= player.positionX + spriteSize[0] - 426;
-					}
-				}
-				if (kbState[SDL_SCANCODE_UP]) {
-					if (player.positionY > 351 && player.positionY + spriteSize[1] > 351 + spriteSize[1]) {
-						player.positionY += 351 + spriteSize[1] - player.positionY;
-					}
-				}
-				if (kbState[SDL_SCANCODE_DOWN]) {
-					if (player.positionY < 351 && player.positionY + spriteSize[1] > 351 && player.positionY + spriteSize[1] < 351 + spriteSize[1]) {
-						player.positionY -= player.positionY + spriteSize[1] - 351;
-					}
-				}
+			if (kbState[SDL_SCANCODE_LEFT]) {
+			if (player.positionX > 426 && player.positionX + spriteSize[0] > 426 + spriteSize[0]) {
+			player.positionX += 426 + spriteSize[0] - player.positionX;
+			}
+			}
+			if (kbState[SDL_SCANCODE_RIGHT]) {
+			if (player.positionX < 426 && player.positionX + spriteSize[0] > 426 && player.positionX + spriteSize[0] < 426 + spriteSize[0]) {
+			player.positionX -= player.positionX + spriteSize[0] - 426;
+			}
+			}
+			if (kbState[SDL_SCANCODE_UP]) {
+			if (player.positionY > 351 && player.positionY + spriteSize[1] > 351 + spriteSize[1]) {
+			player.positionY += 351 + spriteSize[1] - player.positionY;
+			}
+			}
+			if (kbState[SDL_SCANCODE_DOWN]) {
+			if (player.positionY < 351 && player.positionY + spriteSize[1] > 351 && player.positionY + spriteSize[1] < 351 + spriteSize[1]) {
+			player.positionY -= player.positionY + spriteSize[1] - 351;
+			}
+			}
 			}
 			*/
 			//printf("physicsDeltaMs: %f\n", physicsDeltaMs);
@@ -993,15 +947,19 @@ int main(void)
 				camera.positionY += offset;
 			}
 		}
-		
+
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
 		//****** Draw BackGronud ******//
 
-		//Old background, this background will be replaced once the static background is loaded
-		/*
+
+
+
+
+
+
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
@@ -1015,38 +973,16 @@ int main(void)
 				}
 			}
 		}
-		*/
+
 
 		//Static background drawing (Layer 1)
-		
-		for (int y = 0; y < 40; y++)
-		{
-			for (int x = 0; x < 40; x++)
-			{
-				int tileNum = getTile(x, y);
-				if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
-					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
-					if (Static_BackGround[getStaticBackground(x, y)] != NULL) {
-						try {
-							glDrawSprite(Static_BackGround[getStaticBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
-						}
-						catch (exception e) {
-
-						}
-					} 
-					else {
-						glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
-					}
-					
-					
-					/*
-					
-					*/
-				}
-			}
+		/*
+		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
+		&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
+		glDrawSprite(Static_BackGround, 0 - camera.positionX, 0 - camera.positionY, Static_BackGroundSize[0], Static_BackGroundSize[1]);
 		}
-		
-		
+		*/
+
 		//Destroyable background drawing (Layer 2)
 
 		//Sprite drawing (Layer 3)
@@ -1079,7 +1015,7 @@ int main(void)
 			}
 		}
 		//glDrawSprite(projectile_image, player.positionX + 5 - camera.positionX, player.positionY + 15 - camera.positionY, projectileSize[0], projectileSize[1]);
-		
+
 		//Weapon drawing (Layer 3)
 
 		//Effect drawing (Layer 3)
