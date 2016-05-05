@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Kun Su\Documents\GitHub\worms_game\SDL2-2.0.4\include;C:\Users\Kun Su\Documents\GitHub\worms_game\glew-1.13.0\include;D:\Users\Shadow\Documents\GitHub\worms_game\glew-1.13.0\include;D:\Users\Shadow\Documents\GitHub\worms_game\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Kun Su\Documents\GitHub\worms_game\SDL2-2.0.4\lib\x86;C:\Users\Kun Su\Documents\GitHub\worms_game\glew-1.13.0\lib\Release\Win32;D:\Users\Shadow\Documents\GitHub\worms_game\glew-1.13.0\lib\Release\Win32;D:\Users\Shadow\Documents\GitHub\worms_game\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Kun Su\Documents\GitHub\worms_game\SDL2-2.0.4\include;C:\Users\Kun Su\Documents\GitHub\worms_game\glew-1.13.0\include;D:\Users\Shadow\Documents\GitHub\worms_game\glew-1.13.0\include;D:\Users\Shadow\Documents\GitHub\worms_game\SDL2-2.0.4\include;C:\Users\Owner\Desktop\CS134 Project\worms_game\glew-1.13.0\include;C:\Users\Owner\Desktop\CS134 Project\worms_game\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Kun Su\Documents\GitHub\worms_game\SDL2-2.0.4\lib\x86;C:\Users\Kun Su\Documents\GitHub\worms_game\glew-1.13.0\lib\Release\Win32;D:\Users\Shadow\Documents\GitHub\worms_game\glew-1.13.0\lib\Release\Win32;D:\Users\Shadow\Documents\GitHub\worms_game\SDL2-2.0.4\lib\x86;C:\Users\Owner\Desktop\CS134 Project\worms_game\SDL2-2.0.4\lib\x86;C:\Users\Owner\Desktop\CS134 Project\worms_game\glew-1.13.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>D:\Users\Shadow\Documents\GitHub\worms_game\glew-1.13.0\include;D:\Users\Shadow\Documents\GitHub\worms_game\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
