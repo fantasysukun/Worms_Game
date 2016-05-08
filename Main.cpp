@@ -35,9 +35,13 @@ float projectilePos[2] = { 526, 451 };
 
 //Static background initialize (Layer 1)
 GLuint Static_BackGround[1600];
+char Static_Background_Name[100];
+int Static_BackGround_Size[2];
 
 //Destroyable  background initialize (Layer 2)
 GLuint Destroyable_BackGround[1600];
+char Destroyable_Background_Name[100];
+int Destroyable_BackGround_Size[2];
 
 //player initialize (Layer 3)
 GLuint player_Walking_Left[2];
@@ -62,7 +66,7 @@ int spriteSize[2];
 int BackgroundSize[2];
 int NewSprintSize[2];
 int projectileSize[2];
-int Static_BackGroundSize[2];
+
 
 float curTime = 0;
 int curFrame = 0;
@@ -125,6 +129,7 @@ typedef struct Character
 	float posY;
 	bool* CollisionDetectionArray; //set the getbit for this array
 
+	GLuint Character_Image;
 }Character;
 
 //modified player to have an array of 4 characters - Marvin
@@ -133,6 +138,7 @@ typedef struct Player
 	float positionX = 526.0f;
 	float positionY = 451.0f;
 	Character characters[4];
+	 
 
 }Player;
 Player player;
@@ -441,14 +447,33 @@ WalkPathPosition WalkPathPositionArray[];
 //Load the whole static background
 void LoadStatic_Background() {
 	int count = 0;
-	char Static_Background_Name[50];
 	for (int y = 0; y < 40; y++)
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Static_Background_Name, sizeof Static_Background_Name, "ArtResource/Static_Background%d.tga", count + 1);
+			sprintf_s(Static_Background_Name, sizeof Static_Background_Name, "ArtResource/Static_background/Static_Background%d.tga", count + 1);
 			try {
-				Static_BackGround[count] = glTexImageTGAFile(Static_Background_Name, &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
+				Static_BackGround[count] = glTexImageTGAFile(Static_Background_Name, &Static_BackGround_Size[0], &Static_BackGround_Size[1]);
+				count++;
+			}
+			catch (exception e) {
+
+			}
+		}
+	}
+}
+
+//Load the whole Destroyable background
+void LoadDestroyable_Background() {
+	int count = 0;
+	
+	for (int y = 0; y < 40; y++)
+	{
+		for (int x = 0; x < 40; x++)
+		{
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background%d.tga", count + 1);
+			try {
+				Destroyable_BackGround[count] = glTexImageTGAFile(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
 				count++;
 			}
 			catch (exception e) {
@@ -507,15 +532,41 @@ int main(void)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+	kbState = SDL_GetKeyboardState(NULL);
 
 
 
 	/* Load the texture */
 	Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
 	Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
+
 	spriteTex_Current = Enemy_Right;
-	kbState = SDL_GetKeyboardState(NULL);
+	
+	bool Testing_C = true;
+	int Testing_Character_size[2];
+	try {
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Right1.tga", NULL, NULL);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Right2.tga", NULL, NULL);
+	}
+	catch (exception e) {
+		Testing_C = false;
+	}
+
+	try {
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character1.tga", &spriteSize[0], &spriteSize[1]);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character2.tga", &spriteSize[0], &spriteSize[1]);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character3.tga", &spriteSize[0], &spriteSize[1]);
+		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character4.tga", &spriteSize[0], &spriteSize[1]);
+	}
+	catch (exception e) {
+
+	}
+
+
+	
+
 
 
 	//BackGround_bottom = glTexImageTGAFile("Background_bottom.tga", NULL, NULL);
@@ -529,7 +580,31 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
+
+	bool Testing_SB = true;
+	GLuint Testing_Static_Background;
+	int Testing_Static_Background_size[2];
+	try {
+		Testing_Static_Background = glTexImageTGAFile("ArtResource/Static_background/Static_Background.tga", &Testing_Static_Background_size[0], &Testing_Static_Background_size[1]);
+	}
+	catch (exception e) {
+		Testing_SB = false;
+	}
+	
+	bool Testing_DB = true;
+	GLuint Testing_Destroyable_Background;
+	int Testing_Destroyable_Background_size[2];
+	try {
+		Testing_Destroyable_Background = glTexImageTGAFile("ArtResource/Destroyable_background/Destroyable_Background.tga", &Testing_Destroyable_Background_size[0], &Testing_Destroyable_Background_size[1]);
+	}
+	catch (exception e) {
+		Testing_DB = false;
+	}
+	//Loading for static background
 	LoadStatic_Background();
+
+	//Loading for destroyable background
+	LoadDestroyable_Background();
 
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 
@@ -914,35 +989,8 @@ int main(void)
 			}
 			//
 
-			CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
-			/*
-			if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 468, 936, 36*3, 36*3))
-			{
-			if (kbState[SDL_SCANCODE_LEFT]) {
-			if (player.positionX > 426 && player.positionX + spriteSize[0] > 426 + spriteSize[0]) {
-			player.positionX += 426 + spriteSize[0] - player.positionX;
-			}
-			}
-			if (kbState[SDL_SCANCODE_RIGHT]) {
-			if (player.positionX < 426 && player.positionX + spriteSize[0] > 426 && player.positionX + spriteSize[0] < 426 + spriteSize[0]) {
-			player.positionX -= player.positionX + spriteSize[0] - 426;
-			}
-			}
-			if (kbState[SDL_SCANCODE_UP]) {
-			if (player.positionY > 351 && player.positionY + spriteSize[1] > 351 + spriteSize[1]) {
-			player.positionY += 351 + spriteSize[1] - player.positionY;
-			}
-			}
-			if (kbState[SDL_SCANCODE_DOWN]) {
-			if (player.positionY < 351 && player.positionY + spriteSize[1] > 351 && player.positionY + spriteSize[1] < 351 + spriteSize[1]) {
-			player.positionY -= player.positionY + spriteSize[1] - 351;
-			}
-			}
-			}
-			*/
-			//printf("physicsDeltaMs: %f\n", physicsDeltaMs);
-			//printf("lastPhysicsFrameMs: %f\n", lastPhysicsFrameMs);
-			//printf("curFrameNS: %f\n", curFrameNS);
+			//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
+
 			lastPhysicsFrameMs += physicsDeltaMs;
 		} while (lastPhysicsFrameMs + physicsDeltaMs < curFrameNS);
 
@@ -1012,26 +1060,9 @@ int main(void)
 
 
 		//****** Draw BackGronud ******//
-
-		//Old background, this background will be replaced once the static background is loaded
-		/*
-		for (int y = 0; y < 40; y++)
-		{
-		for (int x = 0; x < 40; x++)
-		{
-		int tileNum = getTile(x, y);
-		// !!!!!!!!!! NEED Logic Checking !!!!!!!!!!
-		if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
-		&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {//
-		glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
-
-		}
-		}
-		}
-		*/
+		//old background, this background will be replaced once the new background is loaded
 
 		//Static background drawing (Layer 1)
-
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
@@ -1047,21 +1078,48 @@ int main(void)
 
 						}
 					}
-					else {
-						glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
-					}
-
-
-					/*
-
-					*/
 				}
 			}
 		}
 
-
 		//Destroyable background drawing (Layer 2)
+		for (int y = 0; y < 40; y++)
+		{
+			for (int x = 0; x < 40; x++)
+			{
+				int tileNum = getTile(x, y);
+				if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
+					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
+					if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
+						try {
+							glDrawSprite(Destroyable_BackGround[getDestroyableBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
+						}
+						catch (exception e) {
 
+						}
+					}
+					else {
+						glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
+					}
+				}
+			}
+		}
+
+		//Testing background is for artist to do art testing
+		if (Testing_SB) {
+			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
+				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
+				glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
+			}
+		}
+		
+		if (Testing_DB) {
+			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
+				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
+				glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
+			}
+		}
+		
 		//Sprite drawing (Layer 3)
 		if (spriteTex_Current == Enemy_Left)
 		{
@@ -1078,6 +1136,9 @@ int main(void)
 			}
 		}
 
+		if (Testing_C) {
+
+		}
 		//Camera drawing (Layer 3)
 
 		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
@@ -1085,7 +1146,7 @@ int main(void)
 			//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
 			if (sprite1_Alive) {
 				glDrawSprite(Enemy_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
-				printf("\nCurrent player.positionX: %f", player.positionX);
+				//printf("\nCurrent player.positionX: %f", player.positionX);
 			}
 			if (sprite2_Alive) {
 				glDrawSprite(Enemy_Right, EnemyTwo.positionX - camera.positionX, EnemyTwo.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
@@ -1104,6 +1165,7 @@ int main(void)
 			}
 		}
 
+		
 		//Water drawing (Layer 4)
 
 		//UI drawing (Layer 5)

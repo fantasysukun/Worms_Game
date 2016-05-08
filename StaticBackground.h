@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 	int getStaticBackground(int x, int y);
+	int getDestroyableBackground(int x, int y);
 
 #ifdef __cplusplus
 }
