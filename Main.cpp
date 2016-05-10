@@ -540,6 +540,7 @@ int main(void)
 	Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
 	Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
 
+	
 	spriteTex_Current = Enemy_Right;
 	
 	bool Testing_C = true;
@@ -553,6 +554,8 @@ int main(void)
 	catch (exception e) {
 		Testing_C = false;
 	}
+
+	
 
 	try {
 		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character1.tga", &spriteSize[0], &spriteSize[1]);
@@ -580,6 +583,8 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
+	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
+	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
 
 	bool Testing_SB = true;
 	GLuint Testing_Static_Background;
