@@ -54,6 +54,9 @@ GLuint Enemy_Left;
 //Effect initialize (Layer 3)
 GLuint projectile_image;
 
+//Numbers initialize
+GLuint Numbers_Image[9];
+
 //Other initialize 
 GLuint NewSprint;
 GLuint spriteTex_Current;
@@ -130,6 +133,11 @@ typedef struct Character
 	bool* CollisionDetectionArray; //set the getbit for this array
 
 	GLuint Character_Image;
+
+	//HP setup
+	int HP = 100;
+	GLuint HP_Image[3];
+	
 }Character;
 
 //modified player to have an array of 4 characters - Marvin
@@ -483,6 +491,12 @@ void LoadDestroyable_Background() {
 	}
 }
 
+void player_characters_HP_Image_initializationAndupdate(Character characters)
+{
+	characters.HP_Image[0] = Numbers_Image[characters.HP / 100];
+	characters.HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
+	characters.HP_Image[2] = Numbers_Image[characters.HP % 10];
+}
 //***************** Main function *****************
 int main(void)
 {
@@ -583,8 +597,8 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
-	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
-	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
+	player_Walking_Left[0] = glTexImageTGAFile("Backup_Art/Worms_Armageddon_Sprites_1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
+	player_Walking_Left[1] = glTexImageTGAFile("Backup_Art/WormsFort3D_sprite1.tga", NULL, NULL);
 
 	bool Testing_SB = true;
 	GLuint Testing_Static_Background;
@@ -605,6 +619,32 @@ int main(void)
 	catch (exception e) {
 		Testing_DB = false;
 	}
+
+	//Loading numberes
+	char Numbers_Name[9];
+	int Numbers_Size[2];
+	for (int i = 0; i < 9; i++)
+	{
+		sprintf_s(Numbers_Name, sizeof Numbers_Name, "ArtResource/Numbers/%d.tga", i);
+		try {
+			Numbers_Image[i] = glTexImageTGAFile(Numbers_Name, &Numbers_Size[0], &Numbers_Size[1]);
+		}
+		catch (exception e) {
+
+		}
+	}
+
+	//characters HP image initialization;
+	player_characters_HP_Image_initializationAndupdate(playerOne.characters[0]);
+	player_characters_HP_Image_initializationAndupdate(playerOne.characters[1]);
+	player_characters_HP_Image_initializationAndupdate(playerOne.characters[2]);
+	player_characters_HP_Image_initializationAndupdate(playerOne.characters[3]);
+	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[0]);
+	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[1]);
+	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[2]);
+	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[3]);
+
+
 	//Loading for static background
 	LoadStatic_Background();
 
