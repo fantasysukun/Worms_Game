@@ -742,8 +742,9 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
-	player_Walking_Left[0] = glTexImageTGAFile("Backup_Art/Worms_Armageddon_Sprites_1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
-	player_Walking_Left[1] = glTexImageTGAFile("Backup_Art/WormsFort3D_sprite1.tga", NULL, NULL);
+	int Character_Left_Size[2];
+	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
+	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
 
 	bool Testing_SB = true;
 	GLuint Testing_Static_Background;
@@ -1320,7 +1321,7 @@ int main(void)
 		{
 			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				animDraw(player_Walking_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime);
+				animDraw(player_Walking_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, Character_Left_Size[0], Character_Left_Size[1], deltaTime);
 			}
 		}
 		if (spriteTex_Current == Enemy_Right)
