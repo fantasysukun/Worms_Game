@@ -70,6 +70,15 @@ int BackgroundSize[2];
 int NewSprintSize[2];
 int projectileSize[2];
 
+// Destroyable Background Byte Array - Kevin Lai, 5/11/2016
+bool* destroyBackground = new bool[1600];
+
+// Sprites Byte Arrays - Change the size later when there are more sprites - Kevin Lai, 5/11/2016
+bool* characterBytes = new bool[4];
+
+// Turn time - Kevin Lai, 5/11/2016
+float setTime = 1000;
+float defaultTime = setTime;
 
 float curTime = 0;
 int curFrame = 0;
@@ -85,6 +94,18 @@ bool sprite2_Alive = false;
 int CurrentMovementNumber = 0;
 float gravity = 0.5f;
 
+/*
+* Turn Timer Counter for each player's turn
+* Call this in the update for each frame - Kevin Lai, 5/11/2016
+*/
+void turnTimer(float deltaTimeCount){
+	defaultTime -= deltaTimeCount;
+
+	if (defaultTime <= 0){
+		defaultTime = setTime;
+	}
+
+}
 
 //Sprite update and display function. This function need to be change to two spile function. 
 //one for update with delta time, one for drawing.
@@ -287,7 +308,7 @@ bool* getBytes(const char* filename){
 Added pixel perfect detection
 - Kevin Lai
 */
-bool pixelPerfect(const char* filename1, const char* filename2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
+bool pixelPerfect(bool* sprite1, bool* sprite2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
 
 	/*
 	Intersection: X, Y, Width, Height
@@ -338,8 +359,8 @@ bool pixelPerfect(const char* filename1, const char* filename2, float x, float y
 	}
 
 	// The alpha array of each object involved in the collision
-	bool* object1 = getBytes(filename1);
-	bool* object2 = getBytes(filename2);
+	bool* object1 = sprite1;
+	bool* object2 = sprite2;
 
 	float offsetX = intersectionX - x, offsetX2 = intersectionX - x2, offsetY = intersectionY - y, offsetY2 = intersectionY - y2;
 
@@ -369,8 +390,6 @@ bool pixelPerfect(const char* filename1, const char* filename2, float x, float y
 
 	return false;
 }
-
-
 
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
@@ -482,6 +501,34 @@ void LoadDestroyable_Background() {
 			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background%d.tga", count + 1);
 			try {
 				Destroyable_BackGround[count] = glTexImageTGAFile(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
+				count++;
+			}
+			catch (exception e) {
+
+			}
+		}
+	}
+}
+
+//Load the whole Destroyable background byte array - Kevin Lai, 5/11/2016
+void LoadCharacter_Bytes() {
+	characterBytes[0] = getBytes("ArtResource/Character/Character_Left1.tga");
+	characterBytes[1] = getBytes("ArtResource/Character/Character_Left2.tga");
+	characterBytes[2] = getBytes("ArtResource/Character/Character_Right1.tga");
+	characterBytes[3] = getBytes("ArtResource/Character/Character_Right2.tga");
+}
+
+//Load the whole Destroyable background byte array - Kevin Lai, 5/11/2016
+void LoadDestroyable_Background_Bytes() {
+	int count = 0;
+
+	for (int y = 0; y < 40; y++)
+	{
+		for (int x = 0; x < 40; x++)
+		{
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background%d.tga", count + 1);
+			try {
+				destroyBackground[count] = getBytes(Destroyable_Background_Name);
 				count++;
 			}
 			catch (exception e) {
@@ -661,6 +708,12 @@ int main(void)
 
 	//Loading for destroyable background
 	LoadDestroyable_Background();
+
+	// Loading the byte array for each character sprite - Kevin Lai, 5/11/2016
+	LoadCharacter_Bytes();
+
+	//Loading the byte array for each tile in destroyable background - Kevin Lai, 5/11/2016
+	LoadDestroyable_Background_Bytes();
 
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 
