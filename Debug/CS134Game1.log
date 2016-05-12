@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿Build started 5/11/2016 5:00:20 PM.
      1>Project "C:\Users\Kun Su\Documents\GitHub\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
@@ -40,3 +41,14 @@
 Build succeeded.
 
 Time Elapsed 00:00:01.13
+=======
+﻿Build started 5/9/2016 5:32:06 PM.
+     1>Project "D:\Users\Shadow\Documents\GitHub\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         CS134Game1.vcxproj -> D:\Users\Shadow\Documents\GitHub\worms_game\Debug\CS134Game1.exe
+     1>Done Building Project "D:\Users\Shadow\Documents\GitHub\worms_game\CS134Game1.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.21
+>>>>>>> origin/master
