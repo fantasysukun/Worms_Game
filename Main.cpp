@@ -587,7 +587,7 @@ void Load_Alphabet()
 	}
 }
 
-
+//Load & update characters' HP image
 void player_characters_HP_Image_initializationAndupdate(Character characters)
 {
 	try
@@ -599,7 +599,35 @@ void player_characters_HP_Image_initializationAndupdate(Character characters)
 	catch (exception e) {}
 }
 
+void Load_UI()
+{
+	GLuint Turn_Timer;
+	int Turn_Timer_Size[2];
+	GLuint Final_Timer;
+	int Final_Timer_Size[2];
+	GLuint Team_HP_Background;
+	int Team_HP_Background_Size[2];
+	GLuint Team_HP;
+	int Team_HP_Size[2];
 
+	GLuint PlayerOne_Vitory_image;
+	int PlayerOne_Vitory_image_Size[2];
+	GLuint PlayerTwo_Vitory_image;
+	int PlayerTwo_Vitory_image_Size[2];
+
+	try {
+		Turn_Timer = glTexImageTGAFile("ArtResource/UI/Turn_Timer.tga", &Turn_Timer_Size[0], &Turn_Timer_Size[1]);
+		Final_Timer = glTexImageTGAFile("ArtResource/UI/Final_Timer.tga", &Final_Timer_Size[0], &Final_Timer_Size[1]);
+		Team_HP_Background = glTexImageTGAFile("ArtResource/UI/Team_HP_Background.tga", &Team_HP_Background_Size[0], &Team_HP_Background_Size[1]);
+		Team_HP = glTexImageTGAFile("ArtResource/UI/Team_HP.tga", &Team_HP_Size[0], &Team_HP_Size[1]);
+		PlayerOne_Vitory_image = glTexImageTGAFile("ArtResource/UI/PlayerOne_Vitory_image.tga", &PlayerOne_Vitory_image_Size[0], &PlayerOne_Vitory_image_Size[1]);
+		PlayerTwo_Vitory_image = glTexImageTGAFile("ArtResource/UI/PlayerTwo_Vitory_image.tga", &PlayerTwo_Vitory_image_Size[0], &PlayerTwo_Vitory_image_Size[1]);
+	}
+	catch (exception e) {
+
+	}
+
+}
 
 
 
@@ -759,6 +787,8 @@ int main(void)
 
 	}
 	
+	//Load UI Layer
+	Load_UI();
 
 	//Loading for static background
 	LoadStatic_Background();
