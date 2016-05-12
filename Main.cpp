@@ -55,7 +55,10 @@ GLuint Enemy_Left;
 GLuint projectile_image;
 
 //Numbers initialize
-GLuint Numbers_Image[9];
+GLuint Numbers_Image[10];
+
+//Alphabet initialize
+GLuint Alphabet_Image[52];
 
 //Other initialize 
 GLuint NewSprint;
@@ -538,6 +541,53 @@ void LoadDestroyable_Background_Bytes() {
 	}
 }
 
+//Loading numberes
+void Load_Numbers()
+{
+	char Numbers_Name[50];
+	int Numbers_Size[2];
+	for (int i = 0; i < 10; i++)
+	{
+		sprintf_s(Numbers_Name, sizeof Numbers_Name, "ArtResource/Numbers/%d.tga", i);
+		try {
+			Numbers_Image[i] = glTexImageTGAFile(Numbers_Name, &Numbers_Size[0], &Numbers_Size[1]);
+		}
+		catch (exception e) {
+
+		}
+	}
+}
+
+
+//Loading Alphabet
+void Load_Alphabet()
+{
+
+	char Alphabet_Name[50];
+	int Alphabet_Size[2];
+	for (int i = 0; i < 26; i++)
+	{
+		sprintf_s(Alphabet_Name, sizeof Alphabet_Name, "ArtResource/Alphabet/%c.tga", 'a'+i);
+		try {
+			Alphabet_Image[i] = glTexImageTGAFile(Alphabet_Name, &Alphabet_Size[0], &Alphabet_Size[1]);
+		}
+		catch (exception e) {
+
+		}
+	}
+	for (int i = 0; i < 26; i++)
+	{
+		sprintf_s(Alphabet_Name, sizeof Alphabet_Name, "ArtResource/Alphabet/%c.tga", 'A' + i);
+		try {
+			Alphabet_Image[i+26] = glTexImageTGAFile(Alphabet_Name, &Alphabet_Size[0], &Alphabet_Size[1]);
+		}
+		catch (exception e) {
+
+		}
+	}
+}
+
+
 void player_characters_HP_Image_initializationAndupdate(Character characters)
 {
 	try
@@ -548,6 +598,22 @@ void player_characters_HP_Image_initializationAndupdate(Character characters)
 	}
 	catch (exception e) {}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //***************** Main function *****************
 int main(void)
 {
@@ -671,22 +737,13 @@ int main(void)
 		Testing_DB = false;
 	}
 
-	//Loading numberes
-	char Numbers_Name[50]; 
-	int Numbers_Size[2];
-	for (int i = 0; i < 9; i++)
-	{
-		sprintf_s(Numbers_Name, sizeof Numbers_Name, "ArtResource/Numbers/%d.tga", i);
-		try {
-			Numbers_Image[i] = glTexImageTGAFile(Numbers_Name, &Numbers_Size[0], &Numbers_Size[1]);
-		}
-		catch (exception e) {
+	//Loading Numberes
+	Load_Numbers();
 
-		}
-	}
-	
+	//Loading Alphabet
+	Load_Alphabet();
+
 	//aracters HP image initialization;
-	
 	try
 	{
 		player_characters_HP_Image_initializationAndupdate(playerOne.characters[0]);
@@ -714,7 +771,6 @@ int main(void)
 
 	//Loading the byte array for each tile in destroyable background - Kevin Lai, 5/11/2016
 	LoadDestroyable_Background_Bytes();
-
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 
 	//NewSprint = glTexImageTGAFile("1.tga", &NewSprintSize[0], &NewSprintSize[1]);
