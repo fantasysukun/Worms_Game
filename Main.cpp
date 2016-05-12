@@ -493,9 +493,13 @@ void LoadDestroyable_Background() {
 
 void player_characters_HP_Image_initializationAndupdate(Character characters)
 {
-	characters.HP_Image[0] = Numbers_Image[characters.HP / 100];
-	characters.HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
-	characters.HP_Image[2] = Numbers_Image[characters.HP % 10];
+	try
+	{
+		characters.HP_Image[0] = Numbers_Image[characters.HP / 100];
+		characters.HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
+		characters.HP_Image[2] = Numbers_Image[characters.HP % 10];
+	}
+	catch (exception e) {}
 }
 //***************** Main function *****************
 int main(void)
@@ -621,7 +625,7 @@ int main(void)
 	}
 
 	//Loading numberes
-	char Numbers_Name[9];
+	char Numbers_Name[50]; 
 	int Numbers_Size[2];
 	for (int i = 0; i < 9; i++)
 	{
@@ -633,17 +637,24 @@ int main(void)
 
 		}
 	}
+	
+	//aracters HP image initialization;
+	
+	try
+	{
+		player_characters_HP_Image_initializationAndupdate(playerOne.characters[0]);
+		player_characters_HP_Image_initializationAndupdate(playerOne.characters[1]);
+		player_characters_HP_Image_initializationAndupdate(playerOne.characters[2]);
+		player_characters_HP_Image_initializationAndupdate(playerOne.characters[3]);
+		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[0]);
+		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[1]);
+		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[2]);
+		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[3]);
+	}
+	catch (exception e) {
 
-	//characters HP image initialization;
-	player_characters_HP_Image_initializationAndupdate(playerOne.characters[0]);
-	player_characters_HP_Image_initializationAndupdate(playerOne.characters[1]);
-	player_characters_HP_Image_initializationAndupdate(playerOne.characters[2]);
-	player_characters_HP_Image_initializationAndupdate(playerOne.characters[3]);
-	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[0]);
-	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[1]);
-	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[2]);
-	player_characters_HP_Image_initializationAndupdate(playerTwo.characters[3]);
-
+	}
+	
 
 	//Loading for static background
 	LoadStatic_Background();
