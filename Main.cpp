@@ -1,6 +1,6 @@
 ﻿/*********************************************************************
 Worms Game
-Version - May 11, 2016
+Version - May 13, 2016
 Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
@@ -44,8 +44,8 @@ char Destroyable_Background_Name[100];
 int Destroyable_BackGround_Size[2];
 
 //player initialize (Layer 3)
-GLuint player_Walking_Left[2];
-GLuint player_Walking_Right[2];
+GLuint player_Walking_Left[3];
+GLuint player_Walking_Right[3];
 
 //Enemy initialize (Layer 3)
 GLuint Enemy_Right;
@@ -72,6 +72,7 @@ int spriteSize[2];
 int BackgroundSize[2];
 int NewSprintSize[2];
 int projectileSize[2];
+int Alphabet_Size[2];
 
 // Destroyable Background Byte Array - Kevin Lai, 5/11/2016
 bool* destroyBackground = new bool[1600];
@@ -110,37 +111,6 @@ void turnTimer(float deltaTimeCount){
 
 }
 
-//Sprite update and display function. This function need to be change to two spile function. 
-//one for update with delta time, one for drawing.
-void animDraw(GLuint textures[], float x, float y, float w, float h, float deltaTime)
-{
-	/*
-	timeSinceStart += 1000 / 60;
-	//curTime = timeSinceStart / 100;
-	//curFrame = curTime % 2;
-	frameTimeSecs = timeSinceStart / 100;
-	secsUntilNextFrame -= frameTimeSecs;
-	*/
-
-	//printf("deltaTime: %f\n", deltaTime);
-	secsUntilNextFrame -= deltaTime;
-	//printf("secsUntilNextFrame: %f\n", secsUntilNextFrame);
-	if (secsUntilNextFrame <= 0.0f) {
-		//printf("secsUntilNextFrame <= CheckResetFramTime: True\n" );
-		//printf("secsUntilNextFrame <= CheckResetFramTime: \n" + (secsUntilNextFrame <= CheckResetFramTime));
-		secsUntilNextFrame += ResetFramTime;
-		if (curFrame == 0){
-			curFrame = 1;
-		}
-		else {
-			curFrame = 0;
-		}
-
-	}
-
-	glDrawSprite(textures[curFrame], x, y, w, h);
-}
-
 typedef struct Camera
 {
 	float positionX = 216.0f;
@@ -162,8 +132,13 @@ typedef struct Character
 	int HP = 100;
 	GLuint HP_Image[3];
 	
+	int const static Character_Frame_Size = 3;
+	GLuint Character_Left[Character_Frame_Size];
+	GLuint Character_Right[Character_Frame_Size];
+	
+	
 }Character;
-
+Character character;
 //modified player to have an array of 4 characters - Marvin
 typedef struct Player
 {
@@ -205,6 +180,26 @@ typedef struct Projectile
 
 std::vector<Projectile> projectilesVector;
 std::vector<Projectile> DrawProjectiles;
+
+//Sprite update and display function. This function need to be change to two spile function. 
+//one for update with delta time, one for drawing.
+void animDraw(GLuint textures[], float x, float y, float w, float h, float deltaTime, int Frame_Size)
+{
+
+	secsUntilNextFrame -= deltaTime;
+	//printf("secsUntilNextFrame: %f\n", secsUntilNextFrame);
+	if (secsUntilNextFrame <= 0.0f) {
+
+		secsUntilNextFrame += ResetFramTime;
+		if (curFrame < Frame_Size-1){
+			curFrame++;
+		}
+		else {
+			curFrame = 0;
+		}
+	}
+	glDrawSprite(textures[curFrame], x, y, w, h);
+}
 
 void updateProjectile(Projectile* p, float dt)
 {
@@ -481,7 +476,7 @@ void LoadStatic_Background() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Static_Background_Name, sizeof Static_Background_Name, "ArtResource/Static_background/Static_Background%d.tga", count + 1);
+			sprintf_s(Static_Background_Name, sizeof Static_Background_Name, "ArtResource/Static_background/StaticBackground (%d).tga", count + 1);
 			try {
 				Static_BackGround[count] = glTexImageTGAFile(Static_Background_Name, &Static_BackGround_Size[0], &Static_BackGround_Size[1]);
 				count++;
@@ -564,7 +559,6 @@ void Load_Alphabet()
 {
 
 	char Alphabet_Name[50];
-	int Alphabet_Size[2];
 	for (int i = 0; i < 26; i++)
 	{
 		sprintf_s(Alphabet_Name, sizeof Alphabet_Name, "ArtResource/Alphabet/%c.tga", 'a'+i);
@@ -588,13 +582,15 @@ void Load_Alphabet()
 }
 
 //Load & update characters' HP image
-void player_characters_HP_Image_initializationAndupdate(Character characters)
+void player_characters_HP_Image_initializationAndupdate(Player player, Character characters)
 {
 	try
 	{
-		characters.HP_Image[0] = Numbers_Image[characters.HP / 100];
-		characters.HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
-		characters.HP_Image[2] = Numbers_Image[characters.HP % 10];
+		playerOne.characters[0].HP_Image[0] = Numbers_Image[characters.HP / 100];
+		playerOne.characters[0].HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
+		playerOne.characters[0].HP_Image[2] = Numbers_Image[characters.HP % 10];
+		printf("\ncharacters.HP: %d%d%d", characters.HP / 100, (characters.HP / 10) % 10, characters.HP % 10);
+		
 	}
 	catch (exception e) {}
 }
@@ -743,8 +739,18 @@ int main(void)
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 
 	int Character_Left_Size[2];
-	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
-	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
+	character.Character_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
+	character.Character_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
+	character.Character_Left[2] = glTexImageTGAFile("ArtResource/Character/Character_Left3.tga", NULL, NULL);
+
+	try
+	{
+		int Character_Right_Size[2];
+		character.Character_Right[0] = glTexImageTGAFile("ArtResource/Character/Character_Right1.tga", &Character_Right_Size[0], &Character_Right_Size[1]);
+		character.Character_Right[1] = glTexImageTGAFile("ArtResource/Character/Character_Right2.tga", &Character_Right_Size[0], &Character_Right_Size[1]);
+		character.Character_Right[2] = glTexImageTGAFile("ArtResource/Character/Character_Right3.tga", NULL, NULL);
+	}
+	catch (exception e) {}
 
 	bool Testing_SB = true;
 	GLuint Testing_Static_Background;
@@ -775,7 +781,8 @@ int main(void)
 	//aracters HP image initialization;
 	try
 	{
-		player_characters_HP_Image_initializationAndupdate(playerOne.characters[0]);
+		player_characters_HP_Image_initializationAndupdate(playerOne, playerOne.characters[0]);
+		/*
 		player_characters_HP_Image_initializationAndupdate(playerOne.characters[1]);
 		player_characters_HP_Image_initializationAndupdate(playerOne.characters[2]);
 		player_characters_HP_Image_initializationAndupdate(playerOne.characters[3]);
@@ -783,6 +790,7 @@ int main(void)
 		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[1]);
 		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[2]);
 		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[3]);
+		*/
 	}
 	catch (exception e) {
 
@@ -801,7 +809,8 @@ int main(void)
 	LoadCharacter_Bytes();
 
 	//Loading the byte array for each tile in destroyable background - Kevin Lai, 5/11/2016
-	LoadDestroyable_Background_Bytes();
+	//LoadDestroyable_Background_Bytes();
+
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 
 	//NewSprint = glTexImageTGAFile("1.tga", &NewSprintSize[0], &NewSprintSize[1]);
@@ -1279,6 +1288,7 @@ int main(void)
 		}
 
 		//Destroyable background drawing (Layer 2)
+		
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
@@ -1295,10 +1305,18 @@ int main(void)
 						}
 					}
 					else {
-						glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
+						//glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
 					}
 				}
 			}
+		}
+		
+
+		bool Testing = true;
+		if (!Testing)
+		{
+			Testing_SB = false;
+			Testing_DB = false;
 		}
 
 		//Testing background is for artist to do art testing
@@ -1321,14 +1339,19 @@ int main(void)
 		{
 			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				animDraw(player_Walking_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, Character_Left_Size[0], Character_Left_Size[1], deltaTime);
+				animDraw(character.Character_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, Character_Left_Size[0], Character_Left_Size[1], deltaTime, character.Character_Frame_Size);
+				glDrawSprite(playerOne.characters[0].HP_Image[0], player.positionX - camera.positionX - Alphabet_Size[0]/2, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
+				glDrawSprite(playerOne.characters[0].HP_Image[1], player.positionX - camera.positionX, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
+				glDrawSprite(playerOne.characters[0].HP_Image[2], player.positionX - camera.positionX + Alphabet_Size[0]/2, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
+				
 			}
 		}
 		if (spriteTex_Current == Enemy_Right)
 		{
 			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
 				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				animDraw(player_Walking_Right, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime);
+				animDraw(player_Walking_Right, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 2);
+			
 			}
 		}
 
