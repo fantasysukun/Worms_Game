@@ -98,6 +98,8 @@ bool sprite1_Alive = true;
 bool sprite2_Alive = false;
 int CurrentMovementNumber = 0;
 float gravity = 0.5f;
+char hasJumped = 0;
+int jumpTimer = 15;
 
 /*
 * Turn Timer Counter for each player's turn
@@ -1046,7 +1048,11 @@ int main(void)
 		do {
 			// 1. Physics movement
 			//printf("\n\n !!!curFrameMs: %d", curFrameNS);
-			//player.positionY += gravity;
+			player.positionY += gravity;
+			jumpTimer--;
+			if (hasJumped == 1 && jumpTimer == 0) {
+				hasJumped = 0;
+			}
 			//printf("\n\n player.positionY: %d", player.positionY);
 			// Update Projectiles
 			for (int i = 0; i < DrawProjectiles.size(); i++)
@@ -1241,8 +1247,11 @@ int main(void)
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
 			if (player.positionY > 0 + 1) {
-				player.positionY -= offset;
-				SetTheCameraToMiddle("UP");
+				if (hasJumped == 0) {
+					hasJumped = 1;
+					jumpTimer = 250;
+					player.positionY -= 75.0;
+				}
 			}
 		}
 		if (kbState[SDL_SCANCODE_DOWN]) {
