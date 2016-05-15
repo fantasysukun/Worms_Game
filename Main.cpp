@@ -123,7 +123,6 @@ Camera camera;
 
 typedef struct Character
 {
-	int health;
 	char name[16];
 	float posX;
 	float posY;
@@ -138,7 +137,9 @@ typedef struct Character
 	int const static Character_Frame_Size = 3;
 	GLuint Character_Left[Character_Frame_Size];
 	GLuint Character_Right[Character_Frame_Size];
-	
+	GLuint Character_Current[Character_Frame_Size]; 
+
+	bool isDead; 
 	
 }Character;
 Character character;
@@ -166,11 +167,13 @@ typedef struct Enemy
 }Enemy;
 Enemy EnemyOne, EnemyTwo;
 
-/*
-void updatePlayerPos(float x, float y) {
-player.positionX = x;
+
+void updatePlayerPos(Player player, int Character_Number, float x, float y)
+{
+	player.characters[Character_Number].posX = x;
+	player.characters[Character_Number].posY = y;
 }
-*/
+
 typedef struct Projectile
 {
 	float posX;
@@ -393,10 +396,12 @@ bool pixelPerfect(bool* sprite1, bool* sprite2, float x, float y, float w, float
 	return false;
 }
 
+
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
 	player.positionY = PlayerPosY;
 }
+
 
 //Need to double check
 void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASizeX, float ObjectASizeY,
@@ -432,6 +437,7 @@ void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASize
 		}
 	}
 	updatePlayerPos(ObjectAPosX, ObjectAPosY);
+	updatePlayerPos(playerOne, playerOne.Character_Number[0], ObjectAPosX, ObjectAPosY);
 }
 
 //Set the camera to middle
@@ -1234,6 +1240,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_LEFT]) {
 			if (player.positionX > 0 + 1) {
 				player.positionX -= offset;
+				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("LEFT");
 				spriteTex_Current = Enemy_Left;
 			}
@@ -1241,6 +1248,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_RIGHT]) {
 			if (player.positionX < 1440 - spriteSize[0]) {
 				player.positionX += offset;
+				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("RIGHT");
 				spriteTex_Current = Enemy_Right;
 			}
@@ -1251,12 +1259,14 @@ int main(void)
 					hasJumped = 1;
 					jumpTimer = 250;
 					player.positionY -= 75.0;
+					updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				}
 			}
 		}
 		if (kbState[SDL_SCANCODE_DOWN]) {
 			if (player.positionY < 1440 - spriteSize[1]) {
 				player.positionY += offset;
+				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("DOWN");
 			}
 		}
