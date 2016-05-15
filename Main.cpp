@@ -1,6 +1,6 @@
 ﻿/*********************************************************************
 Worms Game
-Version - May 13, 2016
+Version - May 14, 2016
 Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
@@ -59,6 +59,7 @@ GLuint Numbers_Image[10];
 
 //Alphabet initialize
 GLuint Alphabet_Image[52];
+int Alphabet_Size[2];
 
 //Other initialize 
 GLuint NewSprint;
@@ -72,7 +73,7 @@ int spriteSize[2];
 int BackgroundSize[2];
 int NewSprintSize[2];
 int projectileSize[2];
-int Alphabet_Size[2];
+
 
 // Destroyable Background Byte Array - Kevin Lai, 5/11/2016
 bool* destroyBackground = new bool[1600];
@@ -144,8 +145,9 @@ typedef struct Player
 {
 	float positionX = 526.0f;
 	float positionY = 451.0f;
+	
+	int Character_Number[4];
 	Character characters[4];
-	 
 
 }Player;
 Player player;
@@ -582,15 +584,14 @@ void Load_Alphabet()
 }
 
 //Load & update characters' HP image
-void player_characters_HP_Image_initializationAndupdate(Player player, Character characters)
+void player_characters_HP_Image_initializationAndupdate(Player player, int Character_Number)
 {
 	try
 	{
-		playerOne.characters[0].HP_Image[0] = Numbers_Image[characters.HP / 100];
-		playerOne.characters[0].HP_Image[1] = Numbers_Image[(characters.HP / 10) % 10];
-		playerOne.characters[0].HP_Image[2] = Numbers_Image[characters.HP % 10];
-		printf("\ncharacters.HP: %d%d%d", characters.HP / 100, (characters.HP / 10) % 10, characters.HP % 10);
-		
+		playerOne.characters[Character_Number].HP_Image[0] = Numbers_Image[playerOne.characters[Character_Number].HP / 100];
+		playerOne.characters[Character_Number].HP_Image[1] = Numbers_Image[(playerOne.characters[Character_Number].HP / 10) % 10];
+		playerOne.characters[Character_Number].HP_Image[2] = Numbers_Image[playerOne.characters[Character_Number].HP % 10];
+		//printf("\ncharacters.HP: %d%d%d", playerOne.characters[Character_Number].HP / 100, (playerOne.characters[Character_Number].HP / 10) % 10, characters.HP % 10);	
 	}
 	catch (exception e) {}
 }
@@ -690,6 +691,11 @@ int main(void)
 	kbState = SDL_GetKeyboardState(NULL);
 
 
+	for (int i = 0; i < 4; i++)
+	{
+		playerOne.Character_Number[i] = i;
+		playerTwo.Character_Number[i] = i;
+	}
 
 	/* Load the texture */
 	Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
@@ -781,16 +787,11 @@ int main(void)
 	//aracters HP image initialization;
 	try
 	{
-		player_characters_HP_Image_initializationAndupdate(playerOne, playerOne.characters[0]);
-		/*
-		player_characters_HP_Image_initializationAndupdate(playerOne.characters[1]);
-		player_characters_HP_Image_initializationAndupdate(playerOne.characters[2]);
-		player_characters_HP_Image_initializationAndupdate(playerOne.characters[3]);
-		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[0]);
-		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[1]);
-		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[2]);
-		player_characters_HP_Image_initializationAndupdate(playerTwo.characters[3]);
-		*/
+		for (int i = 0; i < 4; i++)
+		{
+			player_characters_HP_Image_initializationAndupdate(playerOne, playerOne.Character_Number[i]);
+			player_characters_HP_Image_initializationAndupdate(playerTwo, playerTwo.Character_Number[i]);
+		}
 	}
 	catch (exception e) {
 
@@ -1094,6 +1095,7 @@ int main(void)
 				}
 			}
 
+			/*
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
 				if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], 0, 1296, 1440, 144))
@@ -1109,6 +1111,18 @@ int main(void)
 				{
 					projectilesVector.push_back(DrawProjectiles[i]);
 					DrawProjectiles.erase(DrawProjectiles.begin() + i);
+				}
+			}
+			*/
+
+			for (int i = 0; i < DrawProjectiles.size(); i++)
+			{
+				if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], playerOne.positionX, playerOne.positionY, Character_Left_Size[0], Character_Left_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
+				{
+					projectilesVector.push_back(DrawProjectiles[i]);
+					DrawProjectiles.erase(DrawProjectiles.begin() + i);
+					playerOne.characters[0].HP -= 1;
+					player_characters_HP_Image_initializationAndupdate(playerOne, playerOne.Character_Number[0]);
 				}
 			}
 
