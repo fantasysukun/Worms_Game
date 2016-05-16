@@ -102,6 +102,8 @@ int jumpTimer = 15;
 
 unsigned char** localbytes = new unsigned char*[1600];
 
+int TitleNumberOnScreen[1600];
+int TitleNumberOnScreen_Count = 0;
 /*
 * Turn Timer Counter for each player's turn
 * Call this in the update for each frame - Kevin Lai, 5/11/2016
@@ -822,12 +824,8 @@ void GettheCurrentPlaer()
 
 }
 
-//Get the title number on screen
-int TitleNumberOnScreen[];
-/*  //fix
-int GetTitleNumberOnScreen[](Camera camera)
+void GetTitleNumberOnScreen()
 {
-	int count = 0;
 	for (int y = 0; y < 40; y++)
 	{
 		for (int x = 0; x < 40; x++)
@@ -835,13 +833,19 @@ int GetTitleNumberOnScreen[](Camera camera)
 			int tileNum = getTile(x, y);
 			if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
 				&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
-				count++;
-				TitleNumberOnScreen[count] = y + 40 * x;
+				if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
+					try {
+						TitleNumberOnScreen[TitleNumberOnScreen_Count] = getDestroyableBackground(x, y);
+						TitleNumberOnScreen_Count++;
+					}
+					catch (exception e) {
+					}
+				}
 			}
 		}
 	}
+	
 }
-*/
 
 
 
@@ -1464,12 +1468,17 @@ int main(void)
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
 			if (player.positionY > 0 + 1) {
+				player.positionY -= offset;
+				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+				SetTheCameraToMiddle("UP");
+				/*
 				if (hasJumped == 0) {
 					hasJumped = 1;
 					jumpTimer = 250;
 					player.positionY -= 75.0;
 					updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				}
+				*/
 			}
 		}
 		if (kbState[SDL_SCANCODE_DOWN]) {
