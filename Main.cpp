@@ -402,6 +402,102 @@ bool pixelPerfect(bool* sprite1, bool* sprite2, float x, float y, float w, float
 	return false;
 }
 
+/*
+Added pixel perfect detection for DB only
+- Kevin Lai
+*/
+void pixelPerfectDB(bool* sprite1, bool* sprite2, float x, float y, float w, float h, float x2, float y2, float w2, float h2){
+
+	/*
+	Intersection: X, Y, Width, Height
+	Left, Top, Right, Bottom
+	*/
+	float intersectionX, intersectionY, intersectionW, intersectionH;
+
+	if (x > x2){
+		intersectionX = x;
+	}
+	else{
+		intersectionX = x2;
+	}
+	if ((x + w) > (x2 + w2)){
+		/*
+		Intersection end point = (x2 + w2), intersection start point = intersectionX
+		Simplified version of (intersection end point - intersection start point) = (x2 + w2) - intersectionX
+		*/
+		intersectionW = (x2 + w2) - intersectionX;
+	}
+	else{
+		/*
+		Intersection end point = (x + w), intersection start point = intersectionX
+		Simplified version of (intersection end point - intersection start point) = (x + w) - intersectionX
+		*/
+		intersectionW = (x + w) - intersectionX;
+	}
+
+	if (y < y2){
+		intersectionY = y2;
+	}
+	else{
+		intersectionY = y;
+	}
+	if ((y + h) < (y2 + h2)){
+		/*
+		Intersection end point = (y + h), intersection start point = intersectionY
+		Simplified version of (intersection end point - intersection start point) = (y + h) - intersectionY
+		*/
+		intersectionH = (y + h) - intersectionY;
+	}
+	else{
+		/*
+		Intersection end point = (y2 + h2), intersection start point = intersectionY
+		Simplified version of (intersection end point - intersection start point) = (y2 + h2) - intersectionY
+		*/
+		intersectionH = (y2 + h2) - intersectionY;
+	}
+
+	// The alpha array of each object involved in the collision
+	bool* object1 = sprite1;
+	bool* object2 = sprite2;
+
+	bool hit = false;
+
+	float offsetX = intersectionX - x, offsetX2 = intersectionX - x2, offsetY = intersectionY - y, offsetY2 = intersectionY - y2;
+
+	for (int i = 0; i < intersectionH; ++i){
+
+		float tempY = i + offsetY;
+		float tempY2 = i + offsetY2;
+
+		for (int j = 0; j < intersectionW; ++j){
+
+			float tempX = j + offsetX;
+			float tempX2 = j + offsetX2;
+
+			/*
+			Alpha array of each object is used in pixel perfect collision detection.
+			If the alpha's of both objects are 1, then there is a collision
+			*/
+			bool a = object1[(int)(w * tempY + tempX)];
+			bool b = object2[(int)(w2 * tempY2 + tempX2)];
+
+
+			if (pixelPerfectDetection(a, b)){
+				localbytes[(int)(w*i + j * 4 + 3)] = 0;
+			}
+		}
+	}
+
+}
+
+
+bool pixelPerfectDetection(bool a, bool b){
+	if (a & b){
+		return true;
+	}
+	return false;
+}
+
 
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
@@ -568,14 +664,6 @@ unsigned char* Getbytes(const char* filename, int* outWidth, int* outHeight)
 GLuint setTransparent(unsigned char* bytes, int imageWidth, int imageHeight)
 {
 	const int BPP = 4;
-	int it;
-
-	for (it = 0; it != imageWidth * imageHeight; ++it) {
-		
-		// if (collision), set to 0
-		bytes[it * BPP + 3] = 0;
-	
-	}
 
 	/* load into OpenGL */
 	GLuint tex;
@@ -1339,6 +1427,9 @@ int main(void)
 			//
 
 			//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
+
+			// LINE TO ADD pixelPerfectDB
+
 
 			lastPhysicsFrameMs += physicsDeltaMs;
 		} while (lastPhysicsFrameMs + physicsDeltaMs < curFrameNS);
