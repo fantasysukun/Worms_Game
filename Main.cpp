@@ -564,6 +564,33 @@ unsigned char* Getbytes(const char* filename, int* outWidth, int* outHeight)
 	return bytes;
 }
 
+// Sets specific bits to zero to make them transparent. Then, saves the result as a new GLuint.
+GLuint setTransparent(unsigned char* bytes, int imageWidth, int imageHeight)
+{
+	const int BPP = 4;
+	int it;
+
+	for (it = 0; it != imageWidth * imageHeight; ++it) {
+		
+		// if (collision), set to 0
+		bytes[it * BPP + 3] = 0;
+	
+	}
+
+	/* load into OpenGL */
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+		GL_BGRA, GL_UNSIGNED_BYTE, bytes);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	free(bytes);
+
+	return tex;
+}
+
 //Load the whole Destroyable background
 void LoadDestroyable_Background() {
 	int count = 0;
