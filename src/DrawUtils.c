@@ -88,6 +88,7 @@ GLuint glTexImageTGAFile(const char* filename, int* outWidth, int* outHeight)
     return tex;
 }
 
+
 /* Draw the sprite */
 void glDrawSprite(GLuint tex, int x, int y, int w, int h)
 {

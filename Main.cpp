@@ -74,7 +74,6 @@ int BackgroundSize[2];
 int NewSprintSize[2];
 int projectileSize[2];
 
-
 // Destroyable Background Byte Array - Kevin Lai, 5/11/2016
 bool* destroyBackground = new bool[1600];
 
@@ -101,6 +100,8 @@ float gravity = 0.5f;
 char hasJumped = 0;
 int jumpTimer = 15;
 
+unsigned char** localbytes = new unsigned char*[1600];
+
 /*
 * Turn Timer Counter for each player's turn
 * Call this in the update for each frame - Kevin Lai, 5/11/2016
@@ -109,7 +110,7 @@ void turnTimer(float deltaTimeCount){
 	defaultTime -= deltaTimeCount;
 
 	if (defaultTime <= 0){
-		defaultTime = setTime;
+		defaultTime += setTime;
 	}
 
 }
@@ -131,7 +132,7 @@ typedef struct Character
 	GLuint Character_Image;
 
 	//HP setup
-	int HP = 100;
+	int HP = 101;
 	GLuint HP_Image[3];
 	
 	int const static Character_Frame_Size = 3;
@@ -143,6 +144,8 @@ typedef struct Character
 	
 }Character;
 Character character;
+Character Current_2;
+
 //modified player to have an array of 4 characters - Marvin
 typedef struct Player
 {
@@ -155,6 +158,9 @@ typedef struct Player
 }Player;
 Player player;
 Player playerOne, playerTwo;
+
+//Game Logic
+Player Current_Plauer;
 
 
 //Enemy Position setup
@@ -498,6 +504,66 @@ void LoadStatic_Background() {
 	}
 }
 
+unsigned char* Getbytes(const char* filename, int* outWidth, int* outHeight)
+{
+	const int BPP = 4;
+	/* open the file */
+	FILE* file = fopen(filename, "rb");
+	if (file == NULL) {
+		return 0;
+	}
+
+	/* skip first two bytes of data we don't need */
+	fseek(file, 2, SEEK_CUR);
+
+	/* read in the image type.  For our purposes the image type should
+	* be either a 2 or a 3. */
+	unsigned char imageTypeCode;
+	fread(&imageTypeCode, 1, 1, file);
+	if (imageTypeCode != 2 && imageTypeCode != 3) {
+		fclose(file);
+		return 0;
+	}
+
+	/* skip 9 bytes of data we don't need */
+	fseek(file, 9, SEEK_CUR);
+
+	/* read image dimensions */
+	int imageWidth = 0;
+	int imageHeight = 0;
+	int bitCount = 0;
+	fread(&imageWidth, sizeof(short), 1, file);
+	fread(&imageHeight, sizeof(short), 1, file);
+	fread(&bitCount, sizeof(unsigned char), 1, file);
+	fseek(file, 1, SEEK_CUR);
+
+	/* allocate memory for image data and read it in */
+	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
+
+	/* read in data */
+	if (bitCount == 32) {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = fgetc(file);
+		}
+	}
+	else {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = 255;
+		}
+	}
+
+	fclose(file);
+	return bytes;
+}
+
 //Load the whole Destroyable background
 void LoadDestroyable_Background() {
 	int count = 0;
@@ -506,9 +572,10 @@ void LoadDestroyable_Background() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background%d.tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count + 1);
 			try {
 				Destroyable_BackGround[count] = glTexImageTGAFile(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
+				localbytes[count] = Getbytes(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
 				count++;
 			}
 			catch (exception e) {
@@ -599,7 +666,7 @@ void player_characters_HP_Image_initializationAndupdate(Player player, int Chara
 		playerOne.characters[Character_Number].HP_Image[0] = Numbers_Image[playerOne.characters[Character_Number].HP / 100];
 		playerOne.characters[Character_Number].HP_Image[1] = Numbers_Image[(playerOne.characters[Character_Number].HP / 10) % 10];
 		playerOne.characters[Character_Number].HP_Image[2] = Numbers_Image[playerOne.characters[Character_Number].HP % 10];
-		//printf("\ncharacters.HP: %d%d%d", playerOne.characters[Character_Number].HP / 100, (playerOne.characters[Character_Number].HP / 10) % 10, characters.HP % 10);	
+		//printf("\ncharacters.HP: %d%d%d", playerOne.characters[Character_Number].HP / 100, (playerOne.characters[Character_Number].HP / 10) % 10, playerOne.characters[Character_Number].HP % 10);
 	}
 	catch (exception e) {}
 }
@@ -634,8 +701,32 @@ void Load_UI()
 
 }
 
+//Game Logic
+void GettheCurrentPlaer()
+{
 
+}
 
+//Get the title number on screen
+int TitleNumberOnScreen[];
+/*  //fix
+int GetTitleNumberOnScreen[](Camera camera)
+{
+	int count = 0;
+	for (int y = 0; y < 40; y++)
+	{
+		for (int x = 0; x < 40; x++)
+		{
+			int tileNum = getTile(x, y);
+			if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
+				&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
+				count++;
+				TitleNumberOnScreen[count] = y + 40 * x;
+			}
+		}
+	}
+}
+*/
 
 
 
@@ -1054,7 +1145,7 @@ int main(void)
 		do {
 			// 1. Physics movement
 			//printf("\n\n !!!curFrameMs: %d", curFrameNS);
-			player.positionY += gravity;
+			//player.positionY += gravity;
 			jumpTimer--;
 			if (hasJumped == 1 && jumpTimer == 0) {
 				hasJumped = 0;
