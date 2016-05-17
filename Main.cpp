@@ -750,15 +750,25 @@ void LoadDestroyable_Background() {
 
 //Load the character alpha byte arrays - Kevin Lai, 5/11/2016
 void LoadCharacter_Bytes() {
-	characterBytes[0] = getBytes("ArtResource/Character/Character_Left1.tga");
-	characterBytes[1] = getBytes("ArtResource/Character/Character_Left2.tga");
-	characterBytes[2] = getBytes("ArtResource/Character/Character_Right1.tga");
-	characterBytes[3] = getBytes("ArtResource/Character/Character_Right2.tga");
+	try {
+		characterBytes[0] = getBytes("ArtResource/Character/Character_Left1.tga");
+		characterBytes[1] = getBytes("ArtResource/Character/Character_Left2.tga");
+		characterBytes[2] = getBytes("ArtResource/Character/Character_Right1.tga");
+		characterBytes[3] = getBytes("ArtResource/Character/Character_Right2.tga");
+	}
+	catch (exception e) {
+
+	}
 }
 
 // Load explosion alpha byte array - Kevin Lai
 void LoadExplosion_Bytes(){
-	explosion = getBytes("ArtResource/Character/Character_Left1.tga");
+	try{
+		explosion = getBytes("ArtResource/Character/Character_Left1.tga");
+	}
+	catch (exception e) {
+
+	}
 }
 
 //Load the whole Destroyable background alpha byte array - Kevin Lai, 5/11/2016
@@ -769,7 +779,7 @@ void LoadDestroyable_Background_Bytes() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background%d.tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count + 1);
 			try {
 				destroyBackground[count] = getBytes(Destroyable_Background_Name);
 				count++;
