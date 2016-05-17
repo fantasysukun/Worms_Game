@@ -114,6 +114,9 @@ GLuint TurnTimer[2];
 //PlayersTurn & CharactersTurn
 int Players_Turn = 0;
 int Characters_Turn = 0;
+Player Current_Player;
+Character Current_Character;
+int Current_Character_Number;
 
 unsigned char** localbytes = new unsigned char*[1600];
 
@@ -916,7 +919,31 @@ void GetTitleNumberOnScreen()
 	
 }
 
+//Returns Current Player
+Player getCurrentPlayer(){
+	if (Players_Turn == 0) {
+		return playerOne;
+	}
+	else {
+		return playerTwo;
+	}
 
+}
+//Returns Current Character
+Character getCurrentCharacter(){
+	if (Characters_Turn == 0) {
+		return getCurrentPlayer().characters[0];
+	}
+	if (Characters_Turn == 1) {
+		return getCurrentPlayer().characters[1];
+	}
+	if (Characters_Turn == 2) {
+		return getCurrentPlayer().characters[2];
+	}
+	if (Characters_Turn == 3) {
+		return getCurrentPlayer().characters[3];
+	}
+}
 
 
 
@@ -976,8 +1003,11 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	kbState = SDL_GetKeyboardState(NULL);
-
-
+	
+	Current_Player = getCurrentPlayer();
+	Current_Character = getCurrentCharacter();
+	Current_Character_Number = Characters_Turn;
+	
 	for (int i = 0; i < 4; i++)
 	{
 		playerOne.Character_Number[i] = i;
