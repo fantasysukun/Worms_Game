@@ -83,6 +83,8 @@ bool* characterBytes = new bool[4];
 // Turn time - Kevin Lai, 5/11/2016
 float setTime = 30000;
 float defaultTime = setTime;
+float displayTimer = 2000;
+float delayTimer = displayTimer;
 
 float curTime = 0;
 int curFrame = 0;
@@ -119,7 +121,7 @@ void Player_Character_Turn(int currentPlayer, int currentCharacter) {
 	}
 	else {
 		Players_Turn = 0;
-		currentCharacter++;
+		Characters_Turn++;
 		if (currentCharacter == 3) {
 			Characters_Turn = 0;
 		}
@@ -133,9 +135,11 @@ void Player_Character_Turn(int currentPlayer, int currentCharacter) {
 */
 void turnTimer(float deltaTimeCount){
 	defaultTime -= deltaTimeCount;
-
+	delayTimer -= deltaTimeCount;
 	if (defaultTime <= 0){
 		defaultTime += setTime;
+		delayTimer = displayTimer;
+		Player_Character_Turn(Players_Turn, Characters_Turn);
 	}
 
 }
@@ -179,6 +183,7 @@ typedef struct Player
 	
 	int Character_Number[4];
 	Character characters[4];
+	bool allCharDead = false;
 
 }Player;
 Player player;
@@ -1670,8 +1675,70 @@ int main(void)
 		}
 
 		//Draw the timer on the bottom left corner
-		glDrawSprite(TurnTimer[0], 0, 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-		glDrawSprite(TurnTimer[1], Alphabet_Size[0], 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+		if (playerOne.allCharDead == false && playerTwo.allCharDead == false) {
+			glDrawSprite(TurnTimer[0], 0, 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(TurnTimer[1], Alphabet_Size[0], 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+		}
+		
+
+		//Display whose Turn
+		if (delayTimer >= 0 && playerOne.allCharDead == false && playerTwo.allCharDead == false) {
+			//Player 1's Characters 1-4
+			if (Players_Turn == 0) {
+				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Numbers_Image[1], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				if (Characters_Turn == 0) {
+					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 1) {
+					glDrawSprite(Numbers_Image[2], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 2) {
+					glDrawSprite(Numbers_Image[3], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 3) {
+					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+			}
+			//Player 2's Characters 1-4
+			if (Players_Turn == 1) {
+				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				if (Characters_Turn == 0) {
+					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 1) {
+					glDrawSprite(Numbers_Image[2], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 2) {
+					glDrawSprite(Numbers_Image[3], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+				if (Characters_Turn == 3) {
+					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				}
+			}
+		}
+
+		
+		//UI for Winner 
+		//Player 1 Win
+		if (playerOne.allCharDead == true) {
+			glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[8], 320 + (2*Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[13], 320 + (3*Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+		}
+		//Player 2 Win
+		if (playerTwo.allCharDead == true) {
+			glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[8], 320 + (2*Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+			glDrawSprite(Alphabet_Image[13], 320 + (3*Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+		}
 		
 		//Water drawing (Layer 4)
 

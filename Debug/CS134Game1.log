@@ -1,40 +1,40 @@
-﻿Build started 5/16/2016 17:43:09.
+﻿Build started 5/17/2016 13:22:58.
      1>Project "C:\Users\Owner\Desktop\CS134 Project\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp
          Main.cpp
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(239): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(730): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(731): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(732): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(733): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(746): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1190): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1195): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1308): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1314): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1327): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1330): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1341): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1344): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1374): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1376): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1390): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1426): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1479): warning C4244: '=' : conversion from 'Uint32' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1565): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1586): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1611): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1618): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1627): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1628): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1629): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1630): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1638): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1652): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1656): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1664): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1668): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(244): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(735): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(736): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(737): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(738): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(751): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1195): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1200): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1313): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1319): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1332): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1346): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1349): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1379): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1381): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1395): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1431): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1484): warning C4244: '=' : conversion from 'Uint32' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1570): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1591): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1616): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1623): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1632): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1633): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1634): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1635): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1643): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1657): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1661): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1669): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\owner\desktop\cs134 project\worms_game\main.cpp(1673): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Owner\Desktop\CS134 Project\worms_game\Debug\CS134Game1.exe" /INCREMENTAL /NOLOGO SDL2.lib opengl32.lib glu32.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Owner\Desktop\CS134 Project\worms_game\Debug\CS134Game1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Owner\Desktop\CS134 Project\worms_game\Debug\CS134Game1.lib" /MACHINE:X86 Debug\BackgroundDef.obj
          Debug\Main.obj
@@ -45,4 +45,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.29
+Time Elapsed 00:00:01.68
