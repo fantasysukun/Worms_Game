@@ -1339,11 +1339,20 @@ int main(void)
 		do {
 			// 1. Physics movement
 			//printf("\n\n !!!curFrameMs: %d", curFrameNS);
-			//player.positionY += gravity;
+			player.positionY += gravity;
 			jumpTimer--;
 			if (hasJumped == 1 && jumpTimer == 0) {
 				hasJumped = 0;
 			}
+			else if(hasJumped == 1){
+				/*
+					Someone will need to change this to current_player.current_character.positionX later - Kevin Lai
+					This is basically the speed of the jump. Default at the moment is 4 * speed_of_gravity.
+				*/	
+				player.positionY -= 6*gravity;
+			}
+
+
 			//printf("\n\n player.positionY: %d", player.positionY);
 			// Update Projectiles
 			for (int i = 0; i < DrawProjectiles.size(); i++)
@@ -1536,7 +1545,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_LEFT]) {
 			if (player.positionX > 0 + 1) {
 				player.positionX -= offset;
-				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("LEFT");
 				spriteTex_Current = Enemy_Left;
 			}
@@ -1544,7 +1553,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_RIGHT]) {
 			if (player.positionX < 1440 - spriteSize[0]) {
 				player.positionX += offset;
-				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("RIGHT");
 				spriteTex_Current = Enemy_Right;
 			}
@@ -1552,22 +1561,31 @@ int main(void)
 		if (kbState[SDL_SCANCODE_UP]) {
 			if (player.positionY > 0 + 1) {
 				player.positionY -= offset;
-				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("UP");
-				/*
+				
 				if (hasJumped == 0) {
 					hasJumped = 1;
-					jumpTimer = 250;
-					player.positionY -= 75.0;
-					updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+					/*
+						This will determine how high the character will jump up. - Kevin Lai
+						Equation is: Distance = jumpTimer * jump_speed
+
+						Example: jumpTimer = 27, jump_speed = 6 * gravity = 6 * (0.5) = 3
+						As a result, Distance = 27 * 3 = 81.
+					*/
+					jumpTimer = 27;
+
+					// jumpTimer = 250;
+					// player.positionY -= 75.0;
+					// updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				}
-				*/
+				
 			}
 		}
 		if (kbState[SDL_SCANCODE_DOWN]) {
 			if (player.positionY < 1440 - spriteSize[1]) {
 				player.positionY += offset;
-				updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				SetTheCameraToMiddle("DOWN");
 			}
 		}
@@ -1593,6 +1611,15 @@ int main(void)
 				camera.positionY += offset;
 			}
 		}
+
+		/*
+			Updating the character position after each button press. - Kevin Lai
+			Someone will need to modify this based on whose turn it is. So, example: player 2 character 3's position will be updated.
+		*/
+		updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+
+		// Example: final version should look something like this - Kevin Lai
+		// updatePlayerPos(current_player, current_character, current_character_x, current_character_y);
 
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
