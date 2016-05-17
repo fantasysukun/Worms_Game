@@ -48,7 +48,7 @@ float Destroyable_Background_PositionY[1600];
 //player initialize (Layer 3)
 GLuint player_Walking_Left[3];
 GLuint player_Walking_Right[3];
-GLuint player_Jumping[4];
+GLuint player_Jumping[2];
 
 //Enemy initialize (Layer 3)
 GLuint Enemy_Right;
@@ -1031,10 +1031,8 @@ int main(void)
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
 	player_Walking_Right[1] = glTexImageTGAFile("ArtResource/Right_2.tga", NULL, NULL);
 	
-	player_Jumping[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", NULL, NULL);
-	player_Jumping[1] = glTexImageTGAFile("ArtResource/Character/Character_Jump1.tga", NULL, NULL);
-	player_Jumping[2] = glTexImageTGAFile("ArtResource/Character/Character_Jump2.tga", NULL, NULL);
-	player_Jumping[3] = glTexImageTGAFile("ArtResource/Character/Character_Left3.tga", NULL, NULL);
+	player_Jumping[0] = glTexImageTGAFile("ArtResource/Character/Character_Jump1.tga", NULL, NULL);
+	player_Jumping[1] = glTexImageTGAFile("ArtResource/Character/Character_Jump2.tga", NULL, NULL);
 
 	int Character_Left_Size[2];
 	character.Character_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
@@ -1835,8 +1833,3 @@ int main(void)
 
 	return 0;
 }
-
-//Jumping animation
-		/*if (hasJumped == 1) {
-			animDraw(player_Jumping, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 4);
-		}*/
