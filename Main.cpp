@@ -42,6 +42,8 @@ int Static_BackGround_Size[2];
 GLuint Destroyable_BackGround[1600];
 char Destroyable_Background_Name[100];
 int Destroyable_BackGround_Size[2];
+float Destroyable_Background_PositionX[1600];
+float Destroyable_Background_PositionY[1600];
 
 //player initialize (Layer 3)
 GLuint player_Walking_Left[3];
@@ -79,6 +81,9 @@ bool* destroyBackground = new bool[1600];
 
 // Sprites Byte Arrays - Change the size later when there are more sprites - Kevin Lai, 5/11/2016
 bool* characterBytes = new bool[4];
+
+// Explosion Byte Arrays - Kevin Lai
+bool* explosion;
 
 // Turn time - Kevin Lai, 5/11/2016
 float setTime = 30000;
@@ -223,6 +228,18 @@ typedef struct Projectile
 
 std::vector<Projectile> projectilesVector;
 std::vector<Projectile> DrawProjectiles;
+
+typedef struct Explosion
+{
+	GLuint Explosion_image;
+	float x;
+	float y;
+	float h;
+	float w;
+
+}Explosion;
+
+Explosion missile;
 
 //Sprite update and display function. This function need to be change to two spile function. 
 //one for update with delta time, one for drawing.
@@ -432,6 +449,93 @@ bool pixelPerfect(bool* sprite1, bool* sprite2, float x, float y, float w, float
 	return false;
 }
 
+unsigned char* Getbytes(const char* filename, int* outWidth, int* outHeight)
+{
+	const int BPP = 4;
+	/* open the file */
+	FILE* file = fopen(filename, "rb");
+	if (file == NULL) {
+		return 0;
+	}
+
+	/* skip first two bytes of data we don't need */
+	fseek(file, 2, SEEK_CUR);
+
+	/* read in the image type.  For our purposes the image type should
+	* be either a 2 or a 3. */
+	unsigned char imageTypeCode;
+	fread(&imageTypeCode, 1, 1, file);
+	if (imageTypeCode != 2 && imageTypeCode != 3) {
+		fclose(file);
+		return 0;
+	}
+
+	/* skip 9 bytes of data we don't need */
+	fseek(file, 9, SEEK_CUR);
+
+	/* read image dimensions */
+	int imageWidth = 0;
+	int imageHeight = 0;
+	int bitCount = 0;
+	fread(&imageWidth, sizeof(short), 1, file);
+	fread(&imageHeight, sizeof(short), 1, file);
+	fread(&bitCount, sizeof(unsigned char), 1, file);
+	fseek(file, 1, SEEK_CUR);
+
+	/* allocate memory for image data and read it in */
+	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
+
+	/* read in data */
+	if (bitCount == 32) {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = fgetc(file);
+		}
+	}
+	else {
+		int it;
+		for (it = 0; it != imageWidth * imageHeight; ++it) {
+			bytes[it * BPP + 0] = fgetc(file);
+			bytes[it * BPP + 1] = fgetc(file);
+			bytes[it * BPP + 2] = fgetc(file);
+			bytes[it * BPP + 3] = 255;
+		}
+	}
+
+	fclose(file);
+	return bytes;
+}
+
+// Sets specific bits to zero to make them transparent. Then, saves the result as a new GLuint.
+GLuint setTransparent(unsigned char* bytes, int imageWidth, int imageHeight)
+{
+	const int BPP = 4;
+
+	/* load into OpenGL */
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+		GL_BGRA, GL_UNSIGNED_BYTE, bytes);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	free(bytes);
+
+	return tex;
+}
+
+
+bool pixelPerfectDetection(bool a, bool b){
+	if (a && b){
+		return true;
+	}
+	return false;
+}
+
 /*
 Added pixel perfect detection for DB only
 - Kevin Lai
@@ -512,22 +616,14 @@ void pixelPerfectDB(bool* sprite1, bool* sprite2, float x, float y, float w, flo
 			bool b = object2[(int)(w2 * tempY2 + tempX2)];
 
 
-			/*if (pixelPerfectDetection(a, b)){
-				localbytes[(int)(w*i + j * 4 + 3)] = 0;
-			}*/
+			if (pixelPerfectDetection(a, b)){
+				localbytes[(int)((w*i + j) * 4 + 3)] = 0;
+				Destroyable_BackGround[i*j] = setTransparent(localbytes[(int)((w*i + j )* 4 + 3)], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1]);
+			}
 		}
 	}
 
 }
-
-
-bool pixelPerfectDetection(bool a, bool b){
-	if (a & b){
-		return true;
-	}
-	return false;
-}
-
 
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
@@ -630,85 +726,6 @@ void LoadStatic_Background() {
 	}
 }
 
-unsigned char* Getbytes(const char* filename, int* outWidth, int* outHeight)
-{
-	const int BPP = 4;
-	/* open the file */
-	FILE* file = fopen(filename, "rb");
-	if (file == NULL) {
-		return 0;
-	}
-
-	/* skip first two bytes of data we don't need */
-	fseek(file, 2, SEEK_CUR);
-
-	/* read in the image type.  For our purposes the image type should
-	* be either a 2 or a 3. */
-	unsigned char imageTypeCode;
-	fread(&imageTypeCode, 1, 1, file);
-	if (imageTypeCode != 2 && imageTypeCode != 3) {
-		fclose(file);
-		return 0;
-	}
-
-	/* skip 9 bytes of data we don't need */
-	fseek(file, 9, SEEK_CUR);
-
-	/* read image dimensions */
-	int imageWidth = 0;
-	int imageHeight = 0;
-	int bitCount = 0;
-	fread(&imageWidth, sizeof(short), 1, file);
-	fread(&imageHeight, sizeof(short), 1, file);
-	fread(&bitCount, sizeof(unsigned char), 1, file);
-	fseek(file, 1, SEEK_CUR);
-
-	/* allocate memory for image data and read it in */
-	unsigned char* bytes = (unsigned char*)calloc(imageWidth * imageHeight * BPP, 1);
-
-	/* read in data */
-	if (bitCount == 32) {
-		int it;
-		for (it = 0; it != imageWidth * imageHeight; ++it) {
-			bytes[it * BPP + 0] = fgetc(file);
-			bytes[it * BPP + 1] = fgetc(file);
-			bytes[it * BPP + 2] = fgetc(file);
-			bytes[it * BPP + 3] = fgetc(file);
-		}
-	}
-	else {
-		int it;
-		for (it = 0; it != imageWidth * imageHeight; ++it) {
-			bytes[it * BPP + 0] = fgetc(file);
-			bytes[it * BPP + 1] = fgetc(file);
-			bytes[it * BPP + 2] = fgetc(file);
-			bytes[it * BPP + 3] = 255;
-		}
-	}
-
-	fclose(file);
-	return bytes;
-}
-
-// Sets specific bits to zero to make them transparent. Then, saves the result as a new GLuint.
-GLuint setTransparent(unsigned char* bytes, int imageWidth, int imageHeight)
-{
-	const int BPP = 4;
-
-	/* load into OpenGL */
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, bytes);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	free(bytes);
-
-	return tex;
-}
-
 //Load the whole Destroyable background
 void LoadDestroyable_Background() {
 	int count = 0;
@@ -730,7 +747,7 @@ void LoadDestroyable_Background() {
 	}
 }
 
-//Load the whole Destroyable background byte array - Kevin Lai, 5/11/2016
+//Load the character alpha byte arrays - Kevin Lai, 5/11/2016
 void LoadCharacter_Bytes() {
 	characterBytes[0] = getBytes("ArtResource/Character/Character_Left1.tga");
 	characterBytes[1] = getBytes("ArtResource/Character/Character_Left2.tga");
@@ -738,7 +755,12 @@ void LoadCharacter_Bytes() {
 	characterBytes[3] = getBytes("ArtResource/Character/Character_Right2.tga");
 }
 
-//Load the whole Destroyable background byte array - Kevin Lai, 5/11/2016
+// Load explosion alpha byte array - Kevin Lai
+void LoadExplosion_Bytes(){
+	explosion[0] = getBytes("ArtResource/Character/Character_Left1.tga");
+}
+
+//Load the whole Destroyable background alpha byte array - Kevin Lai, 5/11/2016
 void LoadDestroyable_Background_Bytes() {
 	int count = 0;
 
@@ -1063,7 +1085,10 @@ int main(void)
 	LoadCharacter_Bytes();
 
 	//Loading the byte array for each tile in destroyable background - Kevin Lai, 5/11/2016
-	//LoadDestroyable_Background_Bytes();
+	LoadDestroyable_Background_Bytes();
+
+	// LoadExplosion Byte array - Kevin Lai
+	LoadExplosion_Bytes();
 
 	//Static_BackGround = glTexImageTGAFile("ArtResource/Static_Background.tga", &Static_BackGroundSize[0], &Static_BackGroundSize[1]);
 
@@ -1471,7 +1496,14 @@ int main(void)
 
 			//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
 
-			// LINE TO ADD pixelPerfectDB
+			// pixelPerfectDB to set to transparent
+			for (int i = 0; i < 1600; i++){
+				if (AABB(Destroyable_Background_PositionX[i], Destroyable_Background_PositionY[i], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1], missile.x, missile.y, missile.w, missile.h)){
+					if (pixelPerfect(&destroyBackground[i], explosion, Destroyable_Background_PositionX[i], Destroyable_Background_PositionY[i], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1], missile.x, missile.y, missile.w, missile.h)){
+						pixelPerfectDB(&destroyBackground[i], explosion, Destroyable_Background_PositionX[i], Destroyable_Background_PositionY[i], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1], missile.x, missile.y, missile.w, missile.h);
+					}
+				}
+			}
 
 
 			lastPhysicsFrameMs += physicsDeltaMs;
@@ -1589,6 +1621,8 @@ int main(void)
 					if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
 						try {
 							glDrawSprite(Destroyable_BackGround[getDestroyableBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
+							Destroyable_Background_PositionX[x*y] = x;
+							Destroyable_Background_PositionY[x*y] = y;
 						}
 						catch (exception e) {
 
