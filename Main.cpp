@@ -111,6 +111,22 @@ unsigned char** localbytes = new unsigned char*[1600];
 
 int TitleNumberOnScreen[1600];
 int TitleNumberOnScreen_Count = 0;
+
+//Keeps track of whose turn it is based on player and character 
+void Player_Character_Turn(int currentPlayer, int currentCharacter) {
+	if (currentPlayer == 0) {
+		Players_Turn = 1;
+	}
+	else {
+		Players_Turn = 0;
+		currentCharacter++;
+		if (currentCharacter == 3) {
+			Characters_Turn = 0;
+		}
+	}
+
+}
+
 /*
 * Turn Timer Counter for each player's turn
 * Call this in the update for each frame - Kevin Lai, 5/11/2016
