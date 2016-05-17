@@ -1824,3 +1824,8 @@ int main(void)
 
 	return 0;
 }
+
+//Jumping animation
+		/*if (hasJumped == 1) {
+			animDraw(player_Jumping, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 4);
+		}*/
