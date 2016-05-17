@@ -166,7 +166,7 @@ typedef struct Character
 	GLuint Character_Image;
 
 	//HP setup
-	int HP = 101;
+	int HP = 100;
 	GLuint HP_Image[3];
 	
 	int const static Character_Frame_Size = 3;
