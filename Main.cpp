@@ -114,9 +114,6 @@ GLuint TurnTimer[2];
 //PlayersTurn & CharactersTurn
 int Players_Turn = 0;
 int Characters_Turn = 0;
-Player Current_Player;
-Character Current_Character;
-int Current_Character_Number;
 
 unsigned char** localbytes = new unsigned char*[1600];
 
@@ -944,7 +941,9 @@ Character getCurrentCharacter(){
 		return getCurrentPlayer().characters[3];
 	}
 }
-
+Player Current_Player;
+Character Current_Character;
+int Current_Character_Number;
 
 
 
