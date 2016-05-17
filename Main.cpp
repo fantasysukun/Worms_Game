@@ -81,7 +81,7 @@ bool* destroyBackground = new bool[1600];
 bool* characterBytes = new bool[4];
 
 // Turn time - Kevin Lai, 5/11/2016
-float setTime = 1000;
+float setTime = 30000;
 float defaultTime = setTime;
 
 float curTime = 0;
@@ -99,6 +99,13 @@ int CurrentMovementNumber = 0;
 float gravity = 0.5f;
 char hasJumped = 0;
 int jumpTimer = 15;
+
+//Global Turn Timer
+GLuint TurnTimer[2];
+
+//PlayersTurn & CharactersTurn
+int Players_Turn = 0;
+int Characters_Turn = 0;
 
 unsigned char** localbytes = new unsigned char*[1600];
 
@@ -484,9 +491,9 @@ void pixelPerfectDB(bool* sprite1, bool* sprite2, float x, float y, float w, flo
 			bool b = object2[(int)(w2 * tempY2 + tempX2)];
 
 
-			if (pixelPerfectDetection(a, b)){
+			/*if (pixelPerfectDetection(a, b)){
 				localbytes[(int)(w*i + j * 4 + 3)] = 0;
-			}
+			}*/
 		}
 	}
 
@@ -815,6 +822,13 @@ void Load_UI()
 	catch (exception e) {
 
 	}
+
+}
+
+void Player_Turn_Timer_UI(int timeLeft) {
+	int temp = timeLeft;
+	TurnTimer[0] = Numbers_Image[timeLeft / 10000 % 10];
+	TurnTimer[1] = Numbers_Image[timeLeft / 1000 % 10];
 
 }
 
@@ -1154,6 +1168,10 @@ int main(void)
 				shouldExit = 1;
 			}
 		}
+
+		//Handles the Turn UI 
+		turnTimer(deltaTime);
+		Player_Turn_Timer_UI(defaultTime);
 
 		mouseButtons = SDL_GetMouseState(&mouseX, &mouseY); //get Mouse X, Y
 		SDL_GetRelativeMouseState(&mouseDeltaX, &mouseDeltaY);
@@ -1635,6 +1653,9 @@ int main(void)
 			}
 		}
 
+		//Draw the timer on the bottom left corner
+		glDrawSprite(TurnTimer[0], 0, 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+		glDrawSprite(TurnTimer[1], Alphabet_Size[0], 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 		
 		//Water drawing (Layer 4)
 
