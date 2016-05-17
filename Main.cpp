@@ -615,11 +615,12 @@ void pixelPerfectDB(bool* sprite1, bool* sprite2, float x, float y, float w, flo
 			bool a = object1[(int)(w * tempY + tempX)];
 			bool b = object2[(int)(w2 * tempY2 + tempX2)];
 
-
+			/*
 			if (pixelPerfectDetection(a, b)){
 				localbytes[(int)((w*i + j) * 4 + 3)] = 0;
 				Destroyable_BackGround[i*j] = setTransparent(localbytes[(int)((w*i + j )* 4 + 3)], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1]);
 			}
+			*/
 		}
 	}
 
@@ -757,7 +758,7 @@ void LoadCharacter_Bytes() {
 
 // Load explosion alpha byte array - Kevin Lai
 void LoadExplosion_Bytes(){
-	explosion[0] = getBytes("ArtResource/Character/Character_Left1.tga");
+	explosion = getBytes("ArtResource/Character/Character_Left1.tga");
 }
 
 //Load the whole Destroyable background alpha byte array - Kevin Lai, 5/11/2016
@@ -1076,7 +1077,7 @@ int main(void)
 	Load_UI();
 
 	//Loading for static background
-	LoadStatic_Background();
+	// LoadStatic_Background();
 
 	//Loading for destroyable background
 	LoadDestroyable_Background();
@@ -1496,6 +1497,7 @@ int main(void)
 
 			//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 936, 936, 108, 108);
 
+			/*
 			// pixelPerfectDB to set to transparent
 			for (int i = 0; i < 1600; i++){
 				if (AABB(Destroyable_Background_PositionX[i], Destroyable_Background_PositionY[i], Destroyable_BackGround_Size[0], Destroyable_BackGround_Size[1], missile.x, missile.y, missile.w, missile.h)){
@@ -1504,7 +1506,7 @@ int main(void)
 					}
 				}
 			}
-
+			*/
 
 			lastPhysicsFrameMs += physicsDeltaMs;
 		} while (lastPhysicsFrameMs + physicsDeltaMs < curFrameNS);
