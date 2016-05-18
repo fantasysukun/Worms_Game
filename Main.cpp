@@ -729,7 +729,7 @@ void LoadDestroyable_Background() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background (%d).tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count);
 			try {
 				Destroyable_BackGround[count] = glTexImageTGAFile(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
 				localbytes[count] = Getbytes(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
@@ -773,7 +773,7 @@ void LoadDestroyable_Background_Bytes() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background (%d).tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count);
 			try {
 				destroyBackground[count] = getBytes(Destroyable_Background_Name);
 				count++;
@@ -1649,26 +1649,10 @@ int main(void)
 		*/
 
 		//Static background drawing (Layer 1)
-		/*
-		for (int y = 0; y < 40; y++)
-		{
-			for (int x = 0; x < 40; x++)
-			{
-				int tileNum = getTile(x, y);
-				if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
-					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
-					if (Static_BackGround[getStaticBackground(x, y)] != NULL) {
-						try {
-							glDrawSprite(Static_BackGround[getStaticBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
-						}
-						catch (exception e) {
-
-						}
-					}
-				}
-			}
+		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+			glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
 		}
-		*/
 		
 		
 		//Destroyable background drawing (Layer 2)
@@ -1681,18 +1665,20 @@ int main(void)
 				if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
 					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
 
-					bool testing = (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL);
+					//bool testing = (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL);
 					//fputs(testing ? "true" : "false", stdout);
-					if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
-						try {
+					try {
+						if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
+
 							glDrawSprite(Destroyable_BackGround[getDestroyableBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
 							Destroyable_Background_PositionX[x*y] = x;
 							Destroyable_Background_PositionY[x*y] = y;
 						}
-						catch (exception e) {
-
-						}
 					}
+					catch (exception e) {
+
+					}
+					
 				}
 			}
 		}
@@ -1711,19 +1697,16 @@ int main(void)
 		*/
 		//Testing background is for artist to do art testing
 		
-		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
-			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
-			glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
-		}
-
 		
+
+		/*
 		if (Testing_DB) {
 			if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
 			glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
 			}
 		}
-		
+		*/
 		
 		//Sprite drawing (Layer 3)
 		
