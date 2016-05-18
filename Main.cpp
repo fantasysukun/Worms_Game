@@ -1712,15 +1712,17 @@ int main(void)
 		
 		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
-			glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
-			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
-			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
-			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			
 			//Jumping animation
 			if (hasJumped == 1) {
-				animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 2);
+				animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1], deltaTime, 2);
 			}
+			else{
+				glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+			}
+			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 
 		}
 		
