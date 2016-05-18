@@ -1716,7 +1716,12 @@ int main(void)
 			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
-				
+			
+			//Jumping animation
+			if (hasJumped == 1) {
+				animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 2);
+			}
+
 		}
 		
 		/*
@@ -1729,11 +1734,6 @@ int main(void)
 			}
 		}
 		*/
-
-		//Jumping animation
-		if (hasJumped == 1) {
-			animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 4);
-		}
 
 		//Camera drawing (Layer 3)
 
