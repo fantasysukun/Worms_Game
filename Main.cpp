@@ -729,7 +729,7 @@ void LoadDestroyable_Background() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background (%d).tga", count + 1);
 			try {
 				Destroyable_BackGround[count] = glTexImageTGAFile(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
 				localbytes[count] = Getbytes(Destroyable_Background_Name, &Destroyable_BackGround_Size[0], &Destroyable_BackGround_Size[1]);
@@ -773,7 +773,7 @@ void LoadDestroyable_Background_Bytes() {
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background_%d.tga", count + 1);
+			sprintf_s(Destroyable_Background_Name, sizeof Destroyable_Background_Name, "ArtResource/Destroyable_background/Destroyable_Background (%d).tga", count + 1);
 			try {
 				destroyBackground[count] = getBytes(Destroyable_Background_Name);
 				count++;
@@ -1436,12 +1436,12 @@ int main(void)
 
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
-				if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], playerOne.positionX, playerOne.positionY, Character_Left_Size[0], Character_Left_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
+				if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], Current_Character.posX, Current_Character.posY, Character_Image_Size[0], Character_Image_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
 				{
 					projectilesVector.push_back(DrawProjectiles[i]);
 					DrawProjectiles.erase(DrawProjectiles.begin() + i);
-					playerOne.characters[0].HP -= 1;
-					player_characters_HP_Image_initializationAndupdate(playerOne, playerOne.Character_Number[0]);
+					Current_Character.HP -= 1;
+					player_characters_HP_Image_initializationAndupdate(Current_Player, Current_Character_number);
 				}
 			}
 
