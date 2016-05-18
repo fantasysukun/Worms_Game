@@ -1,6 +1,6 @@
 ﻿/*********************************************************************
 Worms Game
-Version - May 14, 2016
+Version - May 17, 2016
 Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
@@ -70,7 +70,7 @@ GLuint spriteTex_Current;
 GLuint BackGround_bottom;
 GLuint BackGround[20];
 
-
+GLuint Character_Current_Image;
 /* size of the sprite */
 int spriteSize[2];
 int BackgroundSize[2];
@@ -120,6 +120,9 @@ unsigned char** localbytes = new unsigned char*[1600];
 int TitleNumberOnScreen[1600];
 int TitleNumberOnScreen_Count = 0;
 
+int Character_Image_Size[2];
+
+int Current_Character_number;
 //Keeps track of whose turn it is based on player and character 
 void Player_Character_Turn(int currentPlayer, int currentCharacter) {
 	if (currentPlayer == 0) {
@@ -127,7 +130,7 @@ void Player_Character_Turn(int currentPlayer, int currentCharacter) {
 	}
 	else {
 		Players_Turn = 0;
-		Characters_Turn++;
+		//Characters_Turn++;
 		if (currentCharacter == 3) {
 			Characters_Turn = 0;
 		}
@@ -135,20 +138,7 @@ void Player_Character_Turn(int currentPlayer, int currentCharacter) {
 
 }
 
-/*
-* Turn Timer Counter for each player's turn
-* Call this in the update for each frame - Kevin Lai, 5/11/2016
-*/
-void turnTimer(float deltaTimeCount){
-	defaultTime -= deltaTimeCount;
-	delayTimer -= deltaTimeCount;
-	if (defaultTime <= 0){
-		defaultTime += setTime;
-		delayTimer = displayTimer;
-		Player_Character_Turn(Players_Turn, Characters_Turn);
-	}
 
-}
 
 typedef struct Camera
 {
@@ -160,12 +150,13 @@ Camera camera;
 typedef struct Character
 {
 	char name[16];
-	float posX;
-	float posY;
+	float posX = 526.0f;
+	float posY = 451.0f;
 	bool* CollisionDetectionArray; //set the getbit for this array
 
-	GLuint Character_Image;
-
+	GLuint Character_Image_Left;
+	GLuint Character_Image_Right;
+	
 	//HP setup
 	int HP = 100;
 	GLuint HP_Image[3];
@@ -180,13 +171,14 @@ typedef struct Character
 }Character;
 Character character;
 Character Current_2;
+Character Current_Character;
 
 //modified player to have an array of 4 characters - Marvin
 typedef struct Player
 {
 	float positionX = 526.0f;
 	float positionY = 451.0f;
-	
+
 	int Character_Number[4];
 	Character characters[4];
 	bool allCharDead = false;
@@ -194,9 +186,8 @@ typedef struct Player
 }Player;
 Player player;
 Player playerOne, playerTwo;
+Player Current_Player;
 
-//Game Logic
-Player Current_Plauer;
 
 
 //Enemy Position setup
@@ -241,6 +232,8 @@ typedef struct Explosion
 }Explosion;
 
 Explosion missile;
+
+
 
 //Sprite update and display function. This function need to be change to two spile function. 
 //one for update with delta time, one for drawing.
@@ -667,7 +660,7 @@ void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASize
 		}
 	}
 	updatePlayerPos(ObjectAPosX, ObjectAPosY);
-	updatePlayerPos(playerOne, playerOne.Character_Number[0], ObjectAPosX, ObjectAPosY);
+	
 }
 
 //Set the camera to middle
@@ -675,22 +668,22 @@ void SetTheCameraToMiddle(char angle[]) {
 
 	if (angle == "LEFT") {
 		if (camera.positionX > 0) {
-			if (player.positionX < 1440 - 320 - spriteSize[0] / 2) { camera.positionX -= offset; }
+			if (Current_Character.posX < 1440 - 320 - spriteSize[0] / 2) { camera.positionX -= offset; }
 		}
 	}
 	if (angle == "RIGHT") {
 		if (camera.positionX < 1440 - 640) {
-			if (player.positionX > 320 + spriteSize[0] / 2) { camera.positionX += offset; }
+			if (Current_Character.posX > 320 + spriteSize[0] / 2) { camera.positionX += offset; }
 		}
 	}
 	if (angle == "UP") {
 		if (camera.positionY > 0) {
-			if (player.positionY < 1440 - 240 - spriteSize[1] / 2) { camera.positionY -= offset; }
+			if (Current_Character.posY < 1440 - 240 - spriteSize[1] / 2) { camera.positionY -= offset; }
 		}
 	}
 	if (angle == "DOWN") {
 		if (camera.positionY < 1440 - 480) {
-			if (player.positionY > 240 + spriteSize[1] / 2) { camera.positionY += offset; }
+			if (Current_Character.posY > 240 + spriteSize[1] / 2) { camera.positionY += offset; }
 		}
 	}
 }
@@ -887,12 +880,6 @@ void Player_Turn_Timer_UI(int timeLeft) {
 
 }
 
-//Game Logic
-void GettheCurrentPlaer()
-{
-
-}
-
 void GetTitleNumberOnScreen()
 {
 	for (int y = 0; y < 40; y++)
@@ -928,23 +915,36 @@ Player getCurrentPlayer(){
 }
 //Returns Current Character
 Character getCurrentCharacter(){
-	if (Characters_Turn == 0) {
+	if (Current_Character_number == 0) {
 		return getCurrentPlayer().characters[0];
 	}
-	if (Characters_Turn == 1) {
+	if (Current_Character_number == 1) {
 		return getCurrentPlayer().characters[1];
 	}
-	if (Characters_Turn == 2) {
+	if (Current_Character_number == 2) {
 		return getCurrentPlayer().characters[2];
 	}
-	if (Characters_Turn == 3) {
+	if (Current_Character_number == 3) {
 		return getCurrentPlayer().characters[3];
 	}
 }
-Player Current_Player;
-Character Current_Character;
-int Current_Character_Number;
 
+/*
+* Turn Timer Counter for each player's turn
+* Call this in the update for each frame - Kevin Lai, 5/11/2016
+*/
+void turnTimer(float deltaTimeCount){
+	defaultTime -= deltaTimeCount;
+	delayTimer -= deltaTimeCount;
+	if (defaultTime <= 0){
+		defaultTime += setTime;
+		delayTimer = displayTimer;
+		Player_Character_Turn(Players_Turn, Characters_Turn);
+		Current_Player = getCurrentPlayer();
+		Current_Character = getCurrentCharacter();
+	}
+
+}
 
 
 
@@ -1003,10 +1003,6 @@ int main(void)
 
 	kbState = SDL_GetKeyboardState(NULL);
 	
-	Current_Player = getCurrentPlayer();
-	Current_Character = getCurrentCharacter();
-	Current_Character_Number = Characters_Turn;
-	
 	for (int i = 0; i < 4; i++)
 	{
 		playerOne.Character_Number[i] = i;
@@ -1018,43 +1014,20 @@ int main(void)
 	Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
 
 	
-	spriteTex_Current = Enemy_Right;
-	
-	bool Testing_C = true;
-	int Testing_Character_size[2];
-	try {
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Testing_Character_size[0], &Testing_Character_size[1]);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", NULL, NULL);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Right1.tga", NULL, NULL);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character/Character_Right2.tga", NULL, NULL);
-	}
-	catch (exception e) {
-		Testing_C = false;
-	}
 
 	
+	int Character_Image_Size[2];
+	character.Character_Image_Left = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Image_Size[0], &Character_Image_Size[1]);
+	character.Character_Image_Right = glTexImageTGAFile("ArtResource/Character/Character_Right1.tga", &Character_Image_Size[0], &Character_Image_Size[1]);
+	Character_Current_Image = character.Character_Image_Left;
 
-	try {
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character1.tga", &spriteSize[0], &spriteSize[1]);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character2.tga", &spriteSize[0], &spriteSize[1]);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character3.tga", &spriteSize[0], &spriteSize[1]);
-		playerOne.characters[0].Character_Image = glTexImageTGAFile("ArtResource/Character4.tga", &spriteSize[0], &spriteSize[1]);
-	}
-	catch (exception e) {
-
-	}
-
-
-	
-
-
-
+	/*
 	//BackGround_bottom = glTexImageTGAFile("Background_bottom.tga", NULL, NULL);
 	BackGround[0] = glTexImageTGAFile("ArtResource/13.tga", NULL, NULL);
 	BackGround[1] = glTexImageTGAFile("ArtResource/14.tga", NULL, NULL);
 	BackGround[2] = glTexImageTGAFile("ArtResource/4.tga", NULL, NULL);
 	BackGround[3] = glTexImageTGAFile("ArtResource/Static_Background1.tga", NULL, NULL);
-
+	*/
 	player_Walking_Left[0] = glTexImageTGAFile("ArtResource/Left.tga", NULL, NULL);
 	player_Walking_Left[1] = glTexImageTGAFile("ArtResource/Left_2.tga", NULL, NULL);
 	player_Walking_Right[0] = glTexImageTGAFile("ArtResource/Right.tga", NULL, NULL);
@@ -1081,7 +1054,7 @@ int main(void)
 	GLuint Testing_Static_Background;
 	int Testing_Static_Background_size[2];
 	try {
-		Testing_Static_Background = glTexImageTGAFile("ArtResource/Static_background/Static_Background.tga", &Testing_Static_Background_size[0], &Testing_Static_Background_size[1]);
+		Testing_Static_Background = glTexImageTGAFile("ArtResource/Static_background/static_background.tga", &Testing_Static_Background_size[0], &Testing_Static_Background_size[1]);
 	}
 	catch (exception e) {
 		Testing_SB = false;
@@ -1237,6 +1210,10 @@ int main(void)
 	EnemyTwo.positionX = 426.0f;
 	EnemyTwo.positionY = 351.0f;
 
+	//Game logic setup
+	Current_Player = getCurrentPlayer();
+	Current_Character = getCurrentCharacter();
+
 	/* The game loop */
 	while (!shouldExit) {
 		assert(glGetError() == GL_NO_ERROR);
@@ -1372,19 +1349,22 @@ int main(void)
 		do {
 			// 1. Physics movement
 			//printf("\n\n !!!curFrameMs: %d", curFrameNS);
+
+			/*
 			player.positionY += gravity;
 			jumpTimer--;
 			if (hasJumped == 1 && jumpTimer == 0) {
 				hasJumped = 0;
 			}
 			else if(hasJumped == 1){
+			*/
 				/*
 					Someone will need to change this to current_player.current_character.positionX later - Kevin Lai
 					This is basically the speed of the jump. Default at the moment is 4 * speed_of_gravity.
 				*/	
-				player.positionY -= 6*gravity;
-			}
-
+				//player.positionY -= 6*gravity;
+			//}
+			
 
 			//printf("\n\n player.positionY: %d", player.positionY);
 			// Update Projectiles
@@ -1542,8 +1522,8 @@ int main(void)
 
 			//sprite 
 
-			if (player.positionY + spriteSize[1] > 1296) {
-				player.positionY -= player.positionY + spriteSize[1] - 1296;
+			if (Current_Character.posY + Character_Image_Size[1] > 857) {
+				Current_Character.posY -= Current_Character.posY + Character_Image_Size[1] - 857;
 			}
 			//
 
@@ -1574,27 +1554,29 @@ int main(void)
 		if (kbState[SDL_SCANCODE_ESCAPE]) { //SDL_SCANCODE_* get the keyboard state
 			shouldExit = 1;
 		}
+		
+		printf("\nCurrent_Character.posX: %f urrent_Character.posY: %f", Current_Character.posX, Current_Character.posY);
 
 		if (kbState[SDL_SCANCODE_LEFT]) {
-			if (player.positionX > 0 + 1) {
-				player.positionX -= offset;
-				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+			if (Current_Character.posX > 0 + 1) {
+				Current_Character.posX -= offset;
+				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("LEFT");
-				spriteTex_Current = Enemy_Left;
+				Character_Current_Image = character.Character_Image_Left;
 			}
 		}
 		if (kbState[SDL_SCANCODE_RIGHT]) {
-			if (player.positionX < 1440 - spriteSize[0]) {
-				player.positionX += offset;
-				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+			if (Current_Character.posX < 1440 - spriteSize[0]) {
+				Current_Character.posX += offset;
+				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("RIGHT");
-				spriteTex_Current = Enemy_Right;
+				Character_Current_Image = character.Character_Image_Right;
 			}
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
-			if (player.positionY > 0 + 1) {
-				player.positionY -= offset;
-				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+			if (Current_Character.posY > 0 + 1) {
+				Current_Character.posY -= offset;
+				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("UP");
 				
 				if (hasJumped == 0) {
@@ -1616,9 +1598,9 @@ int main(void)
 			}
 		}
 		if (kbState[SDL_SCANCODE_DOWN]) {
-			if (player.positionY < 1440 - spriteSize[1]) {
-				player.positionY += offset;
-				//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+			if (Current_Character.posY < 1440 - spriteSize[1]) {
+				Current_Character.posY += offset;
+				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("DOWN");
 			}
 		}
@@ -1650,7 +1632,7 @@ int main(void)
 			Someone will need to modify this based on whose turn it is. So, example: player 2 character 3's position will be updated.
 		*/
 		updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
-
+		
 		// Example: final version should look something like this - Kevin Lai
 		// updatePlayerPos(current_player, current_character, current_character_x, current_character_y);
 
@@ -1660,8 +1642,14 @@ int main(void)
 
 		//****** Draw BackGronud ******//
 		//old background, this background will be replaced once the new background is loaded
+		/*
+		Current_Player = playerOne;
+		Current_Character_number = 0;
+		Current_Character = Current_Player.characters[Current_Character_number];
+		*/
 
 		//Static background drawing (Layer 1)
+		/*
 		for (int y = 0; y < 40; y++)
 		{
 			for (int x = 0; x < 40; x++)
@@ -1680,7 +1668,9 @@ int main(void)
 				}
 			}
 		}
-
+		*/
+		
+		
 		//Destroyable background drawing (Layer 2)
 		
 		for (int y = 0; y < 40; y++)
@@ -1690,6 +1680,9 @@ int main(void)
 				int tileNum = getTile(x, y);
 				if (camera.positionY / 36 <= y + 11 && y <= camera.positionY / 36 + 15		//display image on-screen only
 					&& camera.positionX / 36 <= x + 1 && x <= camera.positionX / 36 + 19) {// 
+
+					bool testing = (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL);
+					//fputs(testing ? "true" : "false", stdout);
 					if (Destroyable_BackGround[getDestroyableBackground(x, y)] != NULL) {
 						try {
 							glDrawSprite(Destroyable_BackGround[getDestroyableBackground(x, y)], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
@@ -1699,9 +1692,6 @@ int main(void)
 						catch (exception e) {
 
 						}
-					}
-					else {
-						//glDrawSprite(BackGround[tileNum], 36 * x - camera.positionX, 36 * y - camera.positionY, 36, 36);
 					}
 				}
 			}
@@ -1715,54 +1705,57 @@ int main(void)
 			Testing_DB = false;
 		}
 
+		/*
+		Current_Character.posX = player.positionX;
+		Current_Character.posY = player.positionY;
+		*/
 		//Testing background is for artist to do art testing
-		if (Testing_SB) {
-			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
-			}
+		
+		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+			glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
 		}
+
 		
 		if (Testing_DB) {
-			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
+			if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+			glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
 			}
 		}
+		
 		
 		//Sprite drawing (Layer 3)
-		if (spriteTex_Current == Enemy_Left)
-		{
-			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				animDraw(character.Character_Left, player.positionX - camera.positionX, player.positionY - camera.positionY, Character_Left_Size[0], Character_Left_Size[1], deltaTime, character.Character_Frame_Size);
-				glDrawSprite(playerOne.characters[0].HP_Image[0], player.positionX - camera.positionX - Alphabet_Size[0]/2, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
-				glDrawSprite(playerOne.characters[0].HP_Image[1], player.positionX - camera.positionX, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
-				glDrawSprite(playerOne.characters[0].HP_Image[2], player.positionX - camera.positionX + Alphabet_Size[0]/2, player.positionY - camera.positionY - Alphabet_Size[1]/2, Alphabet_Size[0]/2, Alphabet_Size[1]/2);
+		
+		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+			glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 				
-			}
-		}
-		if (spriteTex_Current == Enemy_Right)
-		{
-			if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-				&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
-				animDraw(player_Walking_Right, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 2);
-			
-			}
 		}
 		
+		/*
+		if (spriteTex_Current == Enemy_Right)
+		{
+			if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+				&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+				glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+
+			}
+		}
+		*/
+
 		//Jumping animation
 		if (hasJumped == 1) {
-			animDraw(player_Jumping, player.positionX - camera.positionX, player.positionY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 4);
+			animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, spriteSize[0], spriteSize[1], deltaTime, 4);
 		}
 
-		if (Testing_C) {
-
-		}
 		//Camera drawing (Layer 3)
 
-		if (camera.positionY <= player.positionY && player.positionY <= camera.positionY + 480		//display image on-screen only
-			&& camera.positionX <= player.positionX && player.positionX <= camera.positionX + 640) {
+		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
 			//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
 			if (sprite1_Alive) {
 				glDrawSprite(Enemy_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
@@ -1790,7 +1783,6 @@ int main(void)
 			glDrawSprite(TurnTimer[0], 0, 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			glDrawSprite(TurnTimer[1], Alphabet_Size[0], 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 		}
-		
 
 		//Display whose Turn
 		if (delayTimer >= 0 && playerOne.allCharDead == false && playerTwo.allCharDead == false) {
@@ -1799,16 +1791,16 @@ int main(void)
 				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Numbers_Image[1], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				if (Characters_Turn == 0) {
+				if (Current_Character_number == 0) {
 					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 1) {
+				if (Current_Character_number == 1) {
 					glDrawSprite(Numbers_Image[2], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 2) {
+				if (Current_Character_number == 2) {
 					glDrawSprite(Numbers_Image[3], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 3) {
+				if (Current_Character_number == 3) {
 					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
 			}
@@ -1817,16 +1809,16 @@ int main(void)
 				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				if (Characters_Turn == 0) {
+				if (Current_Character_number == 0) {
 					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 1) {
+				if (Current_Character_number == 1) {
 					glDrawSprite(Numbers_Image[2], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 2) {
+				if (Current_Character_number == 2) {
 					glDrawSprite(Numbers_Image[3], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
-				if (Characters_Turn == 3) {
+				if (Current_Character_number == 3) {
 					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
 			}
