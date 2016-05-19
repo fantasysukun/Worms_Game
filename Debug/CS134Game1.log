@@ -1,4 +1,4 @@
-﻿Build started 5/19/2016 3:01:32 PM.
+﻿Build started 5/19/2016 3:09:34 PM.
      1>Project "C:\Users\Kun Su\Documents\GitHub\worms_game\CS134Game1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp
@@ -11,38 +11,38 @@
      1>c:\users\kun su\documents\github\worms_game\main.cpp(821): warning C4800: 'bool *' : forcing value to bool 'true' or 'false' (performance warning)
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1384): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1395): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1523): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1529): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1590): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1594): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1608): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1701): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1705): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1729): warning C4244: '=' : conversion from 'Uint32' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1754): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1859): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1878): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1879): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1880): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1898): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1899): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1921): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1929): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1932): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1521): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1527): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1588): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1592): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1606): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1699): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1703): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1727): warning C4244: '=' : conversion from 'Uint32' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1752): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1857): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1876): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1877): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1878): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1896): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1897): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1919): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1927): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1930): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1933): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1934): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1935): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1936): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1937): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1938): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1939): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1951): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1954): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1949): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1952): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1955): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(1956): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1957): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1958): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\kun su\documents\github\worms_game\main.cpp(1959): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1960): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(1961): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(2010): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\kun su\documents\github\worms_game\main.cpp(2014): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(2008): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\kun su\documents\github\worms_game\main.cpp(2012): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Kun Su\Documents\GitHub\worms_game\Debug\CS134Game1.exe" /INCREMENTAL /NOLOGO SDL2.lib opengl32.lib glu32.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Kun Su\Documents\GitHub\worms_game\Debug\CS134Game1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Kun Su\Documents\GitHub\worms_game\Debug\CS134Game1.lib" /MACHINE:X86 Debug\BackgroundDef.obj
          Debug\Main.obj
@@ -53,4 +53,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.27
+Time Elapsed 00:00:01.32

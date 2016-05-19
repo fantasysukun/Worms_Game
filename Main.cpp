@@ -2025,13 +2025,13 @@ int main(void)
 			if (delayTimer >= 0 && playerOne.allCharDead == false && playerTwo.allCharDead == false) {
 				//Player 1's Characters 1-4
 				if (Players_Turn == 0) {
-					glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[11], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[0], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[24], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[4], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[17], 320 + (4 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Numbers_Image[1], 320 + (5 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[15], 320 - 3 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[11], 320 - 2 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[0], 320 - 1 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[24], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[4], 320 + (1 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[17], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Numbers_Image[1], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 
 					/*if (Current_Character_number == 0) {
 						glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
@@ -2049,13 +2049,13 @@ int main(void)
 				}
 				//Player 2's Characters 1-4
 				if (Players_Turn == 1) {
-					glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[11], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[0], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[24], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[4], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Alphabet_Image[17], 320 + (4 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-					glDrawSprite(Numbers_Image[2], 320 + (5 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[15], 320 - 3 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[11], 320 - 2 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[0], 320 - 1 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[24], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[4], 320 + (1 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Alphabet_Image[17], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+					glDrawSprite(Numbers_Image[2], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 
 					/*if (Current_Character_number == 0) {
 						glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
@@ -2079,19 +2079,19 @@ int main(void)
 			//UI for Winner 
 			//Player 1 Win
 			if (playerTwo.allCharDead == true) {
-				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Numbers_Image[1], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[8], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[13], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[15], 320 - 2*Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Numbers_Image[1], 320 - 1 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[22], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[8], 320 + (1 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[13], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			}
 			//Player 2 Win
 			if (playerOne.allCharDead == true) {
-				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[8], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
-				glDrawSprite(Alphabet_Image[13], 320 + (3 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[15], 320 - 2 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Numbers_Image[2], 320 - 1 * Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[22], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[8], 320 + (1 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				glDrawSprite(Alphabet_Image[13], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			}
 
 			//Water drawing (Layer 4)
