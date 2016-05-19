@@ -1501,20 +1501,22 @@ int main(void)
 				//printf("\n\n !!!curFrameMs: %d", curFrameNS);
 
 				/*
-				player.positionY += gravity;
+				playerOne.characters[0].posY +=  gravity;
+				playerTwo.characters[0].posY +=  gravity;
 				jumpTimer--;
 				if (hasJumped == 1 && jumpTimer == 0) {
 				hasJumped = 0;
 				}
 				else if(hasJumped == 1){
+				
+				
+					//Someone will need to change this to current_player.current_character.positionX later - Kevin Lai
+					//This is basically the speed of the jump. Default at the moment is 4 * speed_of_gravity.
+					
+				 playerOne.characters[0].posY -= 2*gravity;
+				 playerTwo.characters[0].posY -= 2 * gravity;
+				}
 				*/
-				/*
-					Someone will need to change this to current_player.current_character.positionX later - Kevin Lai
-					This is basically the speed of the jump. Default at the moment is 4 * speed_of_gravity.
-					*/
-				//player.positionY -= 6*gravity;
-				//}
-
 
 				//printf("\n\n player.positionY: %d", player.positionY);
 				// Update Projectiles
