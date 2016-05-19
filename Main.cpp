@@ -1,6 +1,6 @@
 ﻿/*********************************************************************
 Worms Game
-Version - May 17, 2016
+Version - May 18, 2016
 Project member: Kevin Lai, Kun Su, Marvin Lai, Zhou Jing
 */
 
@@ -87,7 +87,7 @@ bool* characterBytes = new bool[4];
 bool* explosion;
 
 // Turn time - Kevin Lai, 5/11/2016
-float setTime = 30000;
+float setTime = 10000; //changed it to 10 seconds just for faster testing
 float defaultTime = setTime;
 float displayTimer = 2000;
 float delayTimer = displayTimer;
@@ -123,22 +123,6 @@ int TitleNumberOnScreen_Count = 0;
 int Character_Image_Size[2];
 
 int Current_Character_number;
-//Keeps track of whose turn it is based on player and character 
-void Player_Character_Turn(int currentPlayer, int currentCharacter) {
-	if (currentPlayer == 0) {
-		Players_Turn = 1;
-	}
-	else {
-		Players_Turn = 0;
-		//Characters_Turn++;
-		if (currentCharacter == 3) {
-			Characters_Turn = 0;
-		}
-	}
-
-}
-
-
 
 typedef struct Camera
 {
@@ -201,11 +185,7 @@ typedef struct Enemy
 Enemy EnemyOne, EnemyTwo;
 
 
-void updatePlayerPos(Player player, int Character_Number, float x, float y)
-{
-	player.characters[Character_Number].posX = x;
-	player.characters[Character_Number].posY = y;
-}
+
 
 typedef struct Projectile
 {
@@ -830,14 +810,19 @@ void Load_Alphabet()
 	}
 }
 
-//Load & update characters' HP image
-void player_characters_HP_Image_initializationAndupdate(Player player, int Character_Number)
+//Load & update characters' HP image - Had to add both player one and player two in order to show health
+void player_characters_HP_Image_initializationAndupdate(Player players, int Character_Number)
 {
 	try
 	{
 		playerOne.characters[Character_Number].HP_Image[0] = Numbers_Image[playerOne.characters[Character_Number].HP / 100];
 		playerOne.characters[Character_Number].HP_Image[1] = Numbers_Image[(playerOne.characters[Character_Number].HP / 10) % 10];
 		playerOne.characters[Character_Number].HP_Image[2] = Numbers_Image[playerOne.characters[Character_Number].HP % 10];
+		
+		playerTwo.characters[Character_Number].HP_Image[0] = Numbers_Image[playerTwo.characters[Character_Number].HP / 100];
+		playerTwo.characters[Character_Number].HP_Image[1] = Numbers_Image[(playerTwo.characters[Character_Number].HP / 10) % 10];
+		playerTwo.characters[Character_Number].HP_Image[2] = Numbers_Image[playerTwo.characters[Character_Number].HP % 10];	
+		
 		//printf("\ncharacters.HP: %d%d%d", playerOne.characters[Character_Number].HP / 100, (playerOne.characters[Character_Number].HP / 10) % 10, playerOne.characters[Character_Number].HP % 10);
 	}
 	catch (exception e) {}
@@ -907,6 +892,7 @@ void GetTitleNumberOnScreen()
 Player getCurrentPlayer(){
 	if (Players_Turn == 0) {
 		return playerOne;
+		
 	}
 	else {
 		return playerTwo;
@@ -914,19 +900,41 @@ Player getCurrentPlayer(){
 
 }
 //Returns Current Character
-Character getCurrentCharacter(){
-	if (Current_Character_number == 0) {
-		return getCurrentPlayer().characters[0];
+Character getCurrentCharacter(int Players_Turn){
+	if (Players_Turn == 0) {
+		return playerOne.characters[Current_Character_number];
 	}
-	if (Current_Character_number == 1) {
-		return getCurrentPlayer().characters[1];
+	else {
+		return playerTwo.characters[Current_Character_number];
 	}
-	if (Current_Character_number == 2) {
-		return getCurrentPlayer().characters[2];
+	
+}
+
+//This physically changes playerOne and PlayerTwo's Health - this fixes the reference problem
+void setCurrentPlayerHP(int currentPlayer, int currentChar, int damage) {
+	if (currentPlayer == 0) {
+		playerOne.characters[currentChar].HP = damage;
 	}
-	if (Current_Character_number == 3) {
-		return getCurrentPlayer().characters[3];
+	if (currentPlayer == 1) {
+		playerTwo.characters[currentChar].HP = damage;
 	}
+
+}
+
+
+//Keeps track of whose turn it is based on player and character 
+void Player_Character_Turn(int currentPlayer, int currentCharacter) {
+	if (currentPlayer == 0) {
+		Players_Turn = 1;
+	}
+	else {
+		Players_Turn = 0;
+		//Characters_Turn++;
+		if (currentCharacter == 3) {
+			Characters_Turn = 0;
+		}
+	}
+
 }
 
 /*
@@ -941,12 +949,44 @@ void turnTimer(float deltaTimeCount){
 		delayTimer = displayTimer;
 		Player_Character_Turn(Players_Turn, Characters_Turn);
 		Current_Player = getCurrentPlayer();
-		Current_Character = getCurrentCharacter();
+		Current_Character = getCurrentCharacter(Players_Turn);
 	}
 
 }
 
 
+//This was from the top, but I moved it to the bottom. To fix the reference problem I had to switch Player players to the int 
+void updatePlayerPos(int players, int Character_Number, float x, float y)
+{
+	if (players == 0) {
+		playerOne.characters[Character_Number].posX = x;
+		playerOne.characters[Character_Number].posY = y;
+	}
+	else {
+		playerTwo.characters[Character_Number].posX = x;
+		playerTwo.characters[Character_Number].posY = y;
+	}
+
+}
+
+
+//Right Now this only checked character 1, for the other characters just add && 2.isDead == true && 3.isDead == true, etc
+void checkDeaths() {
+	for (int i = 0; i < 4; i++) {
+		if (playerOne.characters[i].HP <= 0) {
+			playerOne.characters[i].isDead = true;
+		}
+		if (playerTwo.characters[i].HP <= 0) {
+			playerTwo.characters[i].isDead = true;
+		}
+	}
+	if (playerOne.characters[0].isDead == true) {
+		playerOne.allCharDead = true;
+	}
+	if (playerTwo.characters[0].isDead == true) {
+		playerTwo.allCharDead = true;
+	}
+}
 
 
 
@@ -1010,8 +1050,8 @@ int main(void)
 	}
 
 	/* Load the texture */
-	Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
-	Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
+	//Enemy_Right = glTexImageTGAFile("ArtResource/Enemy_Right.tga", &spriteSize[0], &spriteSize[1]);
+	//Enemy_Left = glTexImageTGAFile("ArtResource/Enemy_Left.tga", &spriteSize[0], &spriteSize[1]);
 
 	
 
@@ -1037,6 +1077,10 @@ int main(void)
 	player_Jumping[1] = glTexImageTGAFile("ArtResource/Character/Character_Jump2.tga", NULL, NULL);
 
 	int Character_Left_Size[2];
+	for (int i = 0; i < 4; i++) {
+		playerOne.characters[i].Character_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
+		playerTwo.characters[i].Character_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
+	}
 	character.Character_Left[0] = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
 	character.Character_Left[1] = glTexImageTGAFile("ArtResource/Character/Character_Left2.tga", &Character_Left_Size[0], &Character_Left_Size[1]);
 	character.Character_Left[2] = glTexImageTGAFile("ArtResource/Character/Character_Left3.tga", NULL, NULL);
@@ -1190,29 +1234,29 @@ int main(void)
 	projectilesVector.push_back(p30);
 
 	//WalkingPosition setup
-	EnemyOne.WalkingPosition = 0;
-	EnemyTwo.WalkingPosition = 2;
+	//EnemyOne.WalkingPosition = 0;
+	//EnemyTwo.WalkingPosition = 2;
 
 	//Enemt WalkPathPosition setup
-	WalkPathPositionOne.positionX = 200.0f;
-	WalkPathPositionOne.positionY = 200.0f;
-	WalkPathPositionTwo.positionX = 200.0f;
-	WalkPathPositionTwo.positionY = 800.0f;
-	WalkPathPositionThree.positionX = 800.0f;
-	WalkPathPositionThree.positionY = 800.0f;
-	WalkPathPositionFour.positionX = 800.0f;
-	WalkPathPositionFour.positionY = 200.0f;
-	WalkPathPosition WalkPathPositionArray[] = { WalkPathPositionOne, WalkPathPositionTwo, WalkPathPositionThree, WalkPathPositionFour };
+	//WalkPathPositionOne.positionX = 200.0f;
+	//WalkPathPositionOne.positionY = 200.0f;
+	//WalkPathPositionTwo.positionX = 200.0f;
+	//WalkPathPositionTwo.positionY = 800.0f;
+	//WalkPathPositionThree.positionX = 800.0f;
+	//WalkPathPositionThree.positionY = 800.0f;
+	//WalkPathPositionFour.positionX = 800.0f;
+	//WalkPathPositionFour.positionY = 200.0f;
+	//WalkPathPosition WalkPathPositionArray[] = { WalkPathPositionOne, WalkPathPositionTwo, WalkPathPositionThree, WalkPathPositionFour };
 
-	//Enemy Position setup
-	EnemyOne.positionX = 688.0f;
-	EnemyOne.positionY = 474.0f;
-	EnemyTwo.positionX = 426.0f;
-	EnemyTwo.positionY = 351.0f;
+	////Enemy Position setup
+	//EnemyOne.positionX = 688.0f;
+	//EnemyOne.positionY = 474.0f;
+	//EnemyTwo.positionX = 426.0f;
+	//EnemyTwo.positionY = 351.0f;
 
 	//Game logic setup
 	Current_Player = getCurrentPlayer();
-	Current_Character = getCurrentCharacter();
+	Current_Character = getCurrentCharacter(Players_Turn);
 
 	/* The game loop */
 	while (!shouldExit) {
@@ -1239,6 +1283,11 @@ int main(void)
 		//Handles the Turn UI 
 		turnTimer(deltaTime);
 		Player_Turn_Timer_UI(defaultTime);
+
+		Current_Character_number = Characters_Turn;
+		
+		//This solves the HP not Changing everytime it gets hit
+		Current_Character = getCurrentCharacter(Players_Turn);
 
 		mouseButtons = SDL_GetMouseState(&mouseX, &mouseY); //get Mouse X, Y
 		SDL_GetRelativeMouseState(&mouseDeltaX, &mouseDeltaY);
@@ -1285,65 +1334,65 @@ int main(void)
 			//printf("\n\n RUNnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn: %d", SDL_GetTicks());
 		}
 
-		//Enemy Update
-		if (sprite1_Alive) {
+		////Enemy Update
+		//if (sprite1_Alive) {
 
-			float RandomMovingSpeed = rand() / (float)RAND_MAX / 10;
-			if (EnemyOne.positionX < WalkPathPositionArray[EnemyOne.WalkingPosition].positionX) {
-				EnemyOne.positionX += RandomMovingSpeed;
-				CurrentMovementNumber++;
-			}
-			else if (EnemyOne.positionX > WalkPathPositionArray[EnemyOne.WalkingPosition].positionX) {
-				EnemyOne.positionX -= RandomMovingSpeed;
-				CurrentMovementNumber++;
-			}
-			if (EnemyOne.positionY < WalkPathPositionArray[EnemyOne.WalkingPosition].positionY) {
-				EnemyOne.positionY += RandomMovingSpeed;
-				CurrentMovementNumber++;
-			}
-			else if (EnemyOne.positionY > WalkPathPositionArray[EnemyOne.WalkingPosition].positionY) {
-				EnemyOne.positionY -= RandomMovingSpeed;
-				CurrentMovementNumber++;
-			}
+		//	float RandomMovingSpeed = rand() / (float)RAND_MAX / 10;
+		//	if (EnemyOne.positionX < WalkPathPositionArray[EnemyOne.WalkingPosition].positionX) {
+		//		EnemyOne.positionX += RandomMovingSpeed;
+		//		CurrentMovementNumber++;
+		//	}
+		//	else if (EnemyOne.positionX > WalkPathPositionArray[EnemyOne.WalkingPosition].positionX) {
+		//		EnemyOne.positionX -= RandomMovingSpeed;
+		//		CurrentMovementNumber++;
+		//	}
+		//	if (EnemyOne.positionY < WalkPathPositionArray[EnemyOne.WalkingPosition].positionY) {
+		//		EnemyOne.positionY += RandomMovingSpeed;
+		//		CurrentMovementNumber++;
+		//	}
+		//	else if (EnemyOne.positionY > WalkPathPositionArray[EnemyOne.WalkingPosition].positionY) {
+		//		EnemyOne.positionY -= RandomMovingSpeed;
+		//		CurrentMovementNumber++;
+		//	}
 
-			if (CurrentMovementNumber == 13000) {
-				EnemyOne.WalkingPosition += 1;
-				CurrentMovementNumber = 0;
-				if (EnemyOne.WalkingPosition == 4) { EnemyOne.WalkingPosition = 0; }
-			}
+		//	if (CurrentMovementNumber == 13000) {
+		//		EnemyOne.WalkingPosition += 1;
+		//		CurrentMovementNumber = 0;
+		//		if (EnemyOne.WalkingPosition == 4) { EnemyOne.WalkingPosition = 0; }
+		//	}
 
-			float RandomShootingSpeed = rand() / (float)RAND_MAX;
-			//printf("\nRandomShootingSpeed : %f", RandomShootingSpeed);
-			if (RandomShootingSpeed < 0.005f) {
-				if (projectilesVector.size() > 0)
-				{
+		//	float RandomShootingSpeed = rand() / (float)RAND_MAX;
+		//	//printf("\nRandomShootingSpeed : %f", RandomShootingSpeed);
+		//	if (RandomShootingSpeed < 0.005f) {
+		//		if (projectilesVector.size() > 0)
+		//		{
 
-					Projectile projectile = projectilesVector.back();
-					projectile.posX = EnemyOne.positionX;
-					projectile.posY = EnemyOne.positionY;
+		//			Projectile projectile = projectilesVector.back();
+		//			projectile.posX = EnemyOne.positionX;
+		//			projectile.posY = EnemyOne.positionY;
 
-					projectile.SpawnTime = curFrameNS;
-					projectilesVector.pop_back();
-					float slopeFromEnemyOneToPlayer = std::abs(std::atan((player.positionY - projectile.posY) / (player.positionX - projectile.posX)));
-					projectile.velocityX = projectile.speed * std::cos(slopeFromEnemyOneToPlayer);
-					projectile.velocityY = projectile.speed * std::sin(slopeFromEnemyOneToPlayer);
-					if (player.positionX - projectile.posX < 0)
-					{
-						projectile.velocityX *= -1;
-					}
+		//			projectile.SpawnTime = curFrameNS;
+		//			projectilesVector.pop_back();
+		//			float slopeFromEnemyOneToPlayer = std::abs(std::atan((player.positionY - projectile.posY) / (player.positionX - projectile.posX)));
+		//			projectile.velocityX = projectile.speed * std::cos(slopeFromEnemyOneToPlayer);
+		//			projectile.velocityY = projectile.speed * std::sin(slopeFromEnemyOneToPlayer);
+		//			if (player.positionX - projectile.posX < 0)
+		//			{
+		//				projectile.velocityX *= -1;
+		//			}
 
-					if (player.positionY - projectile.posY < 0)
-					{
-						projectile.velocityY *= -1;
-					}
-					projectile.posX = EnemyOne.positionX + projectile.velocityX * (spriteSize[0] / 2 + projectileSize[0] / 2);
-					projectile.posY = EnemyOne.positionY + projectile.velocityY * (spriteSize[1] / 2 + projectileSize[1] / 2);
+		//			if (player.positionY - projectile.posY < 0)
+		//			{
+		//				projectile.velocityY *= -1;
+		//			}
+		//			projectile.posX = EnemyOne.positionX + projectile.velocityX * (spriteSize[0] / 2 + projectileSize[0] / 2);
+		//			projectile.posY = EnemyOne.positionY + projectile.velocityY * (spriteSize[1] / 2 + projectileSize[1] / 2);
 
-					DrawProjectiles.push_back(projectile);
+		//			DrawProjectiles.push_back(projectile);
 
-				}
-			}
-		}
+		//		}
+		//	}
+		//}
 
 		// Physics update
 		do {
@@ -1440,85 +1489,89 @@ int main(void)
 				{
 					projectilesVector.push_back(DrawProjectiles[i]);
 					DrawProjectiles.erase(DrawProjectiles.begin() + i);
-					Current_Character.HP -= 1;
+					
+					//This decrements the HP and uses the setHP to directly change the health of either playerOne or Two's characters
+					Current_Character.HP-= 1;
+					printf("Current Character's HP: %d \n", Current_Character.HP);
+					setCurrentPlayerHP(Players_Turn, Current_Character_number, Current_Character.HP);
 					player_characters_HP_Image_initializationAndupdate(Current_Player, Current_Character_number);
 				}
 			}
 
 			// 3. Physics collision resolution
-			if (sprite1_Alive) {
+			//if (sprite1_Alive) {
 
-				//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]);
+			//	//CollisionResolution(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]);
 
-				if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]))
-				{
-					if (kbState[SDL_SCANCODE_LEFT]) {
-						if (player.positionX > EnemyOne.positionX && player.positionX + spriteSize[0] > EnemyOne.positionX + spriteSize[0]) {
-							player.positionX += EnemyOne.positionX + spriteSize[0] - player.positionX;
-							//camera.positionX += offset;
-							SetTheCameraToMiddle("RIGHT");
-						}
-					}
-					if (kbState[SDL_SCANCODE_RIGHT]) {
-						if (player.positionX < EnemyOne.positionX && player.positionX + spriteSize[0] > EnemyOne.positionX && player.positionX + spriteSize[0] < EnemyOne.positionX + spriteSize[0]) {
-							player.positionX -= player.positionX + spriteSize[0] - EnemyOne.positionX;
-							printf("\nplayer.positionX: %f", player.positionX);
-							//camera.positionX -= offset;
-							SetTheCameraToMiddle("LEFT");
-						}
-					}
-					if (kbState[SDL_SCANCODE_UP]) {
-						if (player.positionY > EnemyOne.positionY && player.positionY + spriteSize[1] > EnemyOne.positionY + spriteSize[1]) {
-							player.positionY += EnemyOne.positionY + spriteSize[1] - player.positionY;
-							//camera.positionY += offset;
-							SetTheCameraToMiddle("DOWN");
-						}
-					}
-					if (kbState[SDL_SCANCODE_DOWN]) {
-						if (player.positionY < EnemyOne.positionY && player.positionY + spriteSize[1] > EnemyOne.positionY && player.positionY + spriteSize[1] < EnemyOne.positionY + spriteSize[1]) {
-							player.positionY -= player.positionY + spriteSize[1] - EnemyOne.positionY;
-							//camera.positionY -= offset;
-							SetTheCameraToMiddle("UP");
-						}
-					}
-				}
+			//	if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], EnemyOne.positionX, EnemyOne.positionY, spriteSize[0], spriteSize[1]))
+			//	{
+			//		if (kbState[SDL_SCANCODE_LEFT]) {
+			//			if (player.positionX > EnemyOne.positionX && player.positionX + spriteSize[0] > EnemyOne.positionX + spriteSize[0]) {
+			//				player.positionX += EnemyOne.positionX + spriteSize[0] - player.positionX;
+			//				//camera.positionX += offset;
+			//				SetTheCameraToMiddle("RIGHT");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_RIGHT]) {
+			//			if (player.positionX < EnemyOne.positionX && player.positionX + spriteSize[0] > EnemyOne.positionX && player.positionX + spriteSize[0] < EnemyOne.positionX + spriteSize[0]) {
+			//				player.positionX -= player.positionX + spriteSize[0] - EnemyOne.positionX;
+			//				printf("\nplayer.positionX: %f", player.positionX);
+			//				//camera.positionX -= offset;
+			//				SetTheCameraToMiddle("LEFT");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_UP]) {
+			//			if (player.positionY > EnemyOne.positionY && player.positionY + spriteSize[1] > EnemyOne.positionY + spriteSize[1]) {
+			//				player.positionY += EnemyOne.positionY + spriteSize[1] - player.positionY;
+			//				//camera.positionY += offset;
+			//				SetTheCameraToMiddle("DOWN");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_DOWN]) {
+			//			if (player.positionY < EnemyOne.positionY && player.positionY + spriteSize[1] > EnemyOne.positionY && player.positionY + spriteSize[1] < EnemyOne.positionY + spriteSize[1]) {
+			//				player.positionY -= player.positionY + spriteSize[1] - EnemyOne.positionY;
+			//				//camera.positionY -= offset;
+			//				SetTheCameraToMiddle("UP");
+			//			}
+			//		}
+			//	}
 
-			}
+			//}
 
-			if (sprite2_Alive) {
-				if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 426, 351, spriteSize[0], spriteSize[1]))
-				{
-					if (kbState[SDL_SCANCODE_LEFT]) {
-						if (player.positionX > 426 && player.positionX + spriteSize[0] > 426 + spriteSize[0]) {
-							player.positionX += 426 + spriteSize[0] - player.positionX;
-							//camera.positionX += offset;
-							SetTheCameraToMiddle("RIGHT");
-						}
-					}
-					if (kbState[SDL_SCANCODE_RIGHT]) {
-						if (player.positionX < 426 && player.positionX + spriteSize[0] > 426 && player.positionX + spriteSize[0] < 426 + spriteSize[0]) {
-							player.positionX -= player.positionX + spriteSize[0] - 426;
-							printf("\nplayer.positionX: %f", player.positionX);
-							//camera.positionX -= offset;
-							SetTheCameraToMiddle("LEFT");
-						}
-					}
-					if (kbState[SDL_SCANCODE_UP]) {
-						if (player.positionY > 351 && player.positionY + spriteSize[1] > 351 + spriteSize[1]) {
-							player.positionY += 351 + spriteSize[1] - player.positionY;
-							//camera.positionY += offset;
-							SetTheCameraToMiddle("DOWN");
-						}
-					}
-					if (kbState[SDL_SCANCODE_DOWN]) {
-						if (player.positionY < 351 && player.positionY + spriteSize[1] > 351 && player.positionY + spriteSize[1] < 351 + spriteSize[1]) {
-							player.positionY -= player.positionY + spriteSize[1] - 351;
-							//camera.positionY -= offset;
-							SetTheCameraToMiddle("UP");
-						}
-					}
-				}
-			}
+			//if (sprite2_Alive) {
+			//	if (AABB(player.positionX, player.positionY, spriteSize[0], spriteSize[1], 426, 351, spriteSize[0], spriteSize[1]))
+			//	{
+			//		if (kbState[SDL_SCANCODE_LEFT]) {
+			//			if (player.positionX > 426 && player.positionX + spriteSize[0] > 426 + spriteSize[0]) {
+			//				player.positionX += 426 + spriteSize[0] - player.positionX;
+			//				//camera.positionX += offset;
+			//				SetTheCameraToMiddle("RIGHT");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_RIGHT]) {
+			//			if (player.positionX < 426 && player.positionX + spriteSize[0] > 426 && player.positionX + spriteSize[0] < 426 + spriteSize[0]) {
+			//				player.positionX -= player.positionX + spriteSize[0] - 426;
+			//				printf("\nplayer.positionX: %f", player.positionX);
+			//				//camera.positionX -= offset;
+			//				SetTheCameraToMiddle("LEFT");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_UP]) {
+			//			if (player.positionY > 351 && player.positionY + spriteSize[1] > 351 + spriteSize[1]) {
+			//				player.positionY += 351 + spriteSize[1] - player.positionY;
+			//				//camera.positionY += offset;
+			//				SetTheCameraToMiddle("DOWN");
+			//			}
+			//		}
+			//		if (kbState[SDL_SCANCODE_DOWN]) {
+			//			if (player.positionY < 351 && player.positionY + spriteSize[1] > 351 && player.positionY + spriteSize[1] < 351 + spriteSize[1]) {
+			//				player.positionY -= player.positionY + spriteSize[1] - 351;
+			//				//camera.positionY -= offset;
+			//				SetTheCameraToMiddle("UP");
+			//			}
+			//		}
+			//	}
+			//}
 
 			//sprite 
 
@@ -1554,13 +1607,13 @@ int main(void)
 		if (kbState[SDL_SCANCODE_ESCAPE]) { //SDL_SCANCODE_* get the keyboard state
 			shouldExit = 1;
 		}
-		
-		printf("\nCurrent_Character.posX: %f urrent_Character.posY: %f", Current_Character.posX, Current_Character.posY);
+		//Uncomment for movement location
+		//printf("\nCurrent_Character.posX: %f urrent_Character.posY: %f", Current_Character.posX, Current_Character.posY);
 
 		if (kbState[SDL_SCANCODE_LEFT]) {
 			if (Current_Character.posX > 0 + 1) {
 				Current_Character.posX -= offset;
-				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("LEFT");
 				Character_Current_Image = character.Character_Image_Left;
 			}
@@ -1568,7 +1621,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_RIGHT]) {
 			if (Current_Character.posX < 1440 - spriteSize[0]) {
 				Current_Character.posX += offset;
-				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("RIGHT");
 				Character_Current_Image = character.Character_Image_Right;
 			}
@@ -1576,7 +1629,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_UP]) {
 			if (Current_Character.posY > 0 + 1) {
 				Current_Character.posY -= offset;
-				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("UP");
 				
 				if (hasJumped == 0) {
@@ -1600,7 +1653,7 @@ int main(void)
 		if (kbState[SDL_SCANCODE_DOWN]) {
 			if (Current_Character.posY < 1440 - spriteSize[1]) {
 				Current_Character.posY += offset;
-				updatePlayerPos(Current_Player, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("DOWN");
 			}
 		}
@@ -1631,10 +1684,10 @@ int main(void)
 			Updating the character position after each button press. - Kevin Lai
 			Someone will need to modify this based on whose turn it is. So, example: player 2 character 3's position will be updated.
 		*/
-		updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
+		//updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 		
 		// Example: final version should look something like this - Kevin Lai
-		// updatePlayerPos(current_player, current_character, current_character_x, current_character_y);
+		// updatePlayerPos(Players_Turn, current_character, current_character_x, current_character_y);
 
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -1718,11 +1771,20 @@ int main(void)
 				animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1], deltaTime, 2);
 			}
 			else{
-				glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+
+				// drew only the first character of Player One and Two, Dont jump because it will revert to the previous code havent made it for jump yet
+				glDrawSprite(playerOne.characters[0].Character_Left[0], playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+				glDrawSprite(playerTwo.characters[0].Character_Left[0], playerTwo.characters[0].posX - camera.positionX, playerTwo.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+				//glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
 			}
+
+
+			
+			//draws Health
 			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+			//glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 
 		}
 		
@@ -1739,17 +1801,17 @@ int main(void)
 
 		//Camera drawing (Layer 3)
 
-		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
-			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
-			//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
-			if (sprite1_Alive) {
-				glDrawSprite(Enemy_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
-				//printf("\nCurrent player.positionX: %f", player.positionX);
-			}
-			if (sprite2_Alive) {
-				glDrawSprite(Enemy_Right, EnemyTwo.positionX - camera.positionX, EnemyTwo.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
-			}
-		}
+		//if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+		//	&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+		//	//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
+		//	if (sprite1_Alive) {
+		//		glDrawSprite(Enemy_Left, EnemyOne.positionX - camera.positionX, EnemyOne.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
+		//		//printf("\nCurrent player.positionX: %f", player.positionX);
+		//	}
+		//	if (sprite2_Alive) {
+		//		glDrawSprite(Enemy_Right, EnemyTwo.positionX - camera.positionX, EnemyTwo.positionY - camera.positionY, spriteSize[0], spriteSize[1]);
+		//	}
+		//}
 		//glDrawSprite(projectile_image, player.positionX + 5 - camera.positionX, player.positionY + 15 - camera.positionY, projectileSize[0], projectileSize[1]);
 
 		//Weapon drawing (Layer 3)
@@ -1809,10 +1871,12 @@ int main(void)
 			}
 		}
 
-		
+		//Calls the to see if all the characters on either side to see if they are dead for the Winner
+		checkDeaths();
+
 		//UI for Winner 
 		//Player 1 Win
-		if (playerOne.allCharDead == true) {
+		if (playerTwo.allCharDead == true) {
 			glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
@@ -1820,7 +1884,7 @@ int main(void)
 			glDrawSprite(Alphabet_Image[13], 320 + (3*Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 		}
 		//Player 2 Win
-		if (playerTwo.allCharDead == true) {
+		if (playerOne.allCharDead == true) {
 			glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 			glDrawSprite(Alphabet_Image[22], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
