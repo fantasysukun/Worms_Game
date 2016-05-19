@@ -134,8 +134,8 @@ Camera camera;
 typedef struct Character
 {
 	char name[16];
-	float posX = 526.0f;
-	float posY = 451.0f;
+	float posX;
+	float posY;
 	bool* CollisionDetectionArray; //set the getbit for this array
 
 	GLuint Character_Image_Left;
@@ -166,6 +166,7 @@ typedef struct Player
 	int Character_Number[4];
 	Character characters[4];
 	bool allCharDead = false;
+	GLuint Character_Current_Image;
 
 }Player;
 Player player;
@@ -600,11 +601,25 @@ void pixelPerfectDB(bool* sprite1, bool* sprite2, float x, float y, float w, flo
 
 }
 
+/*
 void updatePlayerPos(float PlayerPosX, float PlayerPosY) {
 	player.positionX = PlayerPosX;
 	player.positionY = PlayerPosY;
 }
+*/
+//This was from the top, but I moved it to the bottom. To fix the reference problem I had to switch Player players to the int 
+void updatePlayerPos(int players, int Character_Number, float x, float y)
+{
+	if (players == 0) {
+		playerOne.characters[Character_Number].posX = x;
+		playerOne.characters[Character_Number].posY = y;
+	}
+	else {
+		playerTwo.characters[Character_Number].posX = x;
+		playerTwo.characters[Character_Number].posY = y;
+	}
 
+}
 
 //Need to double check
 void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASizeX, float ObjectASizeY,
@@ -639,35 +654,79 @@ void CollisionResolution(float ObjectAPosX, float ObjectAPosY, float ObjectASize
 			}
 		}
 	}
-	updatePlayerPos(ObjectAPosX, ObjectAPosY);
-	
+	//updatePlayerPos(ObjectAPosX, ObjectAPosY);
+	updatePlayerPos(Players_Turn, Current_Character_number, ObjectAPosX, ObjectAPosY);
 }
 
 //Set the camera to middle
 void SetTheCameraToMiddle(char angle[]) {
 
 	if (angle == "LEFT") {
-		if (camera.positionX > 0) {
-			if (Current_Character.posX < 1440 - 320 - spriteSize[0] / 2) { camera.positionX -= offset; }
+		if (camera.positionX + Character_Image_Size[0] > 0) {
+			if (Current_Character.posX < 1440 - 320 - Character_Image_Size[0] / 2) { camera.positionX -= offset; }
 		}
 	}
 	if (angle == "RIGHT") {
-		if (camera.positionX < 1440 - 640) {
-			if (Current_Character.posX > 320 + spriteSize[0] / 2) { camera.positionX += offset; }
+		if (camera.positionX < 1440 - 640 + Character_Image_Size[0]) {
+			if (Current_Character.posX > 320 + Character_Image_Size[0] / 2) { camera.positionX += offset; }
 		}
 	}
 	if (angle == "UP") {
-		if (camera.positionY > 0) {
-			if (Current_Character.posY < 1440 - 240 - spriteSize[1] / 2) { camera.positionY -= offset; }
+		if (camera.positionY + Character_Image_Size[1]> 0) {
+			if (Current_Character.posY < 1440 - 240 - Character_Image_Size[1] / 2) { camera.positionY -= offset; }
 		}
 	}
 	if (angle == "DOWN") {
-		if (camera.positionY < 1440 - 480) {
-			if (Current_Character.posY > 240 + spriteSize[1] / 2) { camera.positionY += offset; }
+		//if (camera.positionY < 1440 - 480 + Character_Image_Size[1]) {
+		if (camera.positionY < 1440-(1140-910) - 480  + Character_Image_Size[1]) {
+			if (Current_Character.posY > 240 + Character_Image_Size[1] / 2) { camera.positionY += offset; }
 		}
 	}
 }
 
+void resetCamera(float newPosx, float newPosy)
+{
+	
+	float LastcamerapositionX = camera.positionX;
+	float LastcamerapositionY = camera.positionY;
+	float CurrentcamerapositionX = camera.positionX;
+	float CurrentcamerapositionY = camera.positionY;
+	float TargetPosX = newPosx - 640 / 2 + Character_Image_Size[0] / 2;
+	float TargetPosY = newPosy - 480 / 2 + Character_Image_Size[1] / 2;
+
+	while (LastcamerapositionX != TargetPosX) 
+	{
+		LastcamerapositionX = camera.positionX;
+		LastcamerapositionY = camera.positionY;
+		if (TargetPosX - LastcamerapositionX < 0) {
+			SetTheCameraToMiddle("LEFT");
+			CurrentcamerapositionX = camera.positionX;
+			CurrentcamerapositionY = camera.positionY;
+		}
+		if (TargetPosX - LastcamerapositionX > 0) {
+			SetTheCameraToMiddle("RIGHT");
+			CurrentcamerapositionX = camera.positionX;
+			CurrentcamerapositionY = camera.positionY;
+		}
+		if (TargetPosY - LastcamerapositionY < 0) {
+			SetTheCameraToMiddle("UP");
+			CurrentcamerapositionX = camera.positionX;
+			CurrentcamerapositionY = camera.positionY;
+		}
+		if (TargetPosY - LastcamerapositionY > 0) {
+			SetTheCameraToMiddle("DOWN");
+			CurrentcamerapositionX = camera.positionX;
+			CurrentcamerapositionY = camera.positionY;
+		}
+		
+
+		if (LastcamerapositionX == CurrentcamerapositionX && LastcamerapositionY == CurrentcamerapositionY)
+		{
+			break;
+		}
+	}
+	
+}
 typedef struct WalkPathPosition
 {
 	float positionX;
@@ -950,24 +1009,13 @@ void turnTimer(float deltaTimeCount){
 		Player_Character_Turn(Players_Turn, Characters_Turn);
 		Current_Player = getCurrentPlayer();
 		Current_Character = getCurrentCharacter(Players_Turn);
+		resetCamera(Current_Character.posX, Current_Character.posY);
 	}
 
 }
 
 
-//This was from the top, but I moved it to the bottom. To fix the reference problem I had to switch Player players to the int 
-void updatePlayerPos(int players, int Character_Number, float x, float y)
-{
-	if (players == 0) {
-		playerOne.characters[Character_Number].posX = x;
-		playerOne.characters[Character_Number].posY = y;
-	}
-	else {
-		playerTwo.characters[Character_Number].posX = x;
-		playerTwo.characters[Character_Number].posY = y;
-	}
 
-}
 
 
 //Right Now this only checked character 1, for the other characters just add && 2.isDead == true && 3.isDead == true, etc
@@ -1047,6 +1095,10 @@ int main(void)
 	{
 		playerOne.Character_Number[i] = i;
 		playerTwo.Character_Number[i] = i;
+		playerOne.characters[i].posX = 526.0f;
+		playerOne.characters[i].posY = 451.0f;
+		playerTwo.characters[i].posX = 626.0f;
+		playerTwo.characters[i].posY = 451.0f;
 	}
 
 	/* Load the texture */
@@ -1060,6 +1112,8 @@ int main(void)
 	character.Character_Image_Left = glTexImageTGAFile("ArtResource/Character/Character_Left1.tga", &Character_Image_Size[0], &Character_Image_Size[1]);
 	character.Character_Image_Right = glTexImageTGAFile("ArtResource/Character/Character_Right1.tga", &Character_Image_Size[0], &Character_Image_Size[1]);
 	Character_Current_Image = character.Character_Image_Left;
+	playerOne.Character_Current_Image = Character_Current_Image;
+	playerTwo.Character_Current_Image = Character_Current_Image;
 
 	/*
 	//BackGround_bottom = glTexImageTGAFile("Background_bottom.tga", NULL, NULL);
@@ -1093,6 +1147,11 @@ int main(void)
 		character.Character_Right[2] = glTexImageTGAFile("ArtResource/Character/Character_Right3.tga", NULL, NULL);
 	}
 	catch (exception e) {}
+
+	GLuint DeadthAnimation[2];
+	int DeadthAnimation_Size[2];
+	DeadthAnimation[0] = glTexImageTGAFile("ArtResource/Character/Deadv1.tga", &DeadthAnimation_Size[0], &DeadthAnimation_Size[1]);
+	DeadthAnimation[1] = glTexImageTGAFile("ArtResource/Character/Deadv2.tga", &DeadthAnimation_Size[0], &DeadthAnimation_Size[1]);
 
 	bool Testing_SB = true;
 	GLuint Testing_Static_Background;
@@ -1304,8 +1363,8 @@ int main(void)
 
 				//printf("Running~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 				Projectile projectile = projectilesVector.back();
-				projectile.posX = player.positionX;
-				projectile.posY = player.positionY;
+				projectile.posX = Current_Character.posX;
+				projectile.posY = Current_Character.posY;
 
 				projectile.SpawnTime = curFrameNS;
 				projectilesVector.pop_back();
@@ -1326,7 +1385,8 @@ int main(void)
 				{
 					projectile.velocityY *= -1;
 				}
-
+				projectile.posX = Current_Character.posX + projectile.velocityX * (Character_Image_Size[0] / 2 + projectileSize[0] / 2);
+				projectile.posY = Current_Character.posY + projectile.velocityY * (Character_Image_Size[1] / 2 + projectileSize[1] / 2);
 				DrawProjectiles.push_back(projectile);
 
 
@@ -1436,6 +1496,7 @@ int main(void)
 				}
 			}
 
+			/*
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
 				if (sprite1_Alive) {
@@ -1462,7 +1523,7 @@ int main(void)
 					}
 				}
 			}
-
+			*/
 			/*
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
@@ -1485,16 +1546,33 @@ int main(void)
 
 			for (int i = 0; i < DrawProjectiles.size(); i++)
 			{
-				if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], Current_Character.posX, Current_Character.posY, Character_Image_Size[0], Character_Image_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
+				if (Players_Turn == 0)
 				{
-					projectilesVector.push_back(DrawProjectiles[i]);
-					DrawProjectiles.erase(DrawProjectiles.begin() + i);
-					
-					//This decrements the HP and uses the setHP to directly change the health of either playerOne or Two's characters
-					Current_Character.HP-= 1;
-					printf("Current Character's HP: %d \n", Current_Character.HP);
-					setCurrentPlayerHP(Players_Turn, Current_Character_number, Current_Character.HP);
-					player_characters_HP_Image_initializationAndupdate(Current_Player, Current_Character_number);
+					if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], playerTwo.characters[0].posX, playerTwo.characters[0].posY, Character_Image_Size[0], Character_Image_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
+					{
+						projectilesVector.push_back(DrawProjectiles[i]);
+						DrawProjectiles.erase(DrawProjectiles.begin() + i);
+
+						//This decrements the HP and uses the setHP to directly change the health of either playerOne or Two's characters
+						playerTwo.characters[0].HP -= 1;
+						printf("Current Character's HP: %d \n", playerTwo.characters[0].HP);
+						setCurrentPlayerHP(Players_Turn + 1, Current_Character_number, playerTwo.characters[0].HP);
+						player_characters_HP_Image_initializationAndupdate(playerTwo, 0);
+					}
+				}
+				if (Players_Turn == 1)
+				{
+					if (AABB(DrawProjectiles[i].posX, DrawProjectiles[i].posY, projectileSize[0], projectileSize[1], playerOne.characters[0].posX, playerOne.characters[0].posY, Character_Image_Size[0], Character_Image_Size[1])) //Character_Left_Size[0], Character_Left_Size[1] nned to be change later
+					{
+						projectilesVector.push_back(DrawProjectiles[i]);
+						DrawProjectiles.erase(DrawProjectiles.begin() + i);
+
+						//This decrements the HP and uses the setHP to directly change the health of either playerOne or Two's characters
+						playerOne.characters[0].HP -= 1;
+						printf("Current Character's HP: %d \n", playerOne.characters[0].HP);
+						setCurrentPlayerHP(Players_Turn + 1, Current_Character_number, playerOne.characters[0].HP);
+						player_characters_HP_Image_initializationAndupdate(playerOne, 0);
+					}
 				}
 			}
 
@@ -1575,8 +1653,13 @@ int main(void)
 
 			//sprite 
 
-			if (Current_Character.posY + Character_Image_Size[1] > 857) {
-				Current_Character.posY -= Current_Character.posY + Character_Image_Size[1] - 857;
+			if (playerOne.characters[0].posY + Character_Image_Size[1] > 910) {
+				playerOne.characters[0].posY -= playerOne.characters[0].posY + Character_Image_Size[1] - 910;
+				CollisionResolution(playerOne.characters[0].posX, playerOne.characters[0].posY, Character_Image_Size[0], Character_Image_Size[1], 0, 910, 1440, 1440 - 910);
+			}
+			if (playerTwo.characters[0].posY + Character_Image_Size[1] > 910) {
+				playerTwo.characters[0].posY -= playerTwo.characters[0].posY + Character_Image_Size[1] - 910;
+				CollisionResolution(playerTwo.characters[0].posX, playerTwo.characters[0].posY, Character_Image_Size[0], Character_Image_Size[1], 0, 910, 1440, 1440 - 910);
 			}
 			//
 
@@ -1615,15 +1698,29 @@ int main(void)
 				Current_Character.posX -= offset;
 				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("LEFT");
-				Character_Current_Image = character.Character_Image_Left;
+				if (Players_Turn == 0)
+				{
+					playerOne.Character_Current_Image = character.Character_Image_Left;
+				}
+				if (Players_Turn == 1)
+				{
+					playerTwo.Character_Current_Image = character.Character_Image_Left;
+				}
 			}
 		}
 		if (kbState[SDL_SCANCODE_RIGHT]) {
-			if (Current_Character.posX < 1440 - spriteSize[0]) {
+			if (Current_Character.posX < 1440 - Character_Image_Size[0]) {
 				Current_Character.posX += offset;
 				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("RIGHT");
-				Character_Current_Image = character.Character_Image_Right;
+				if (Players_Turn == 0)
+				{
+					playerOne.Character_Current_Image = character.Character_Image_Right;
+				}
+				if (Players_Turn == 1)
+				{
+					playerTwo.Character_Current_Image = character.Character_Image_Right;
+				}
 			}
 		}
 		if (kbState[SDL_SCANCODE_UP]) {
@@ -1631,15 +1728,29 @@ int main(void)
 				Current_Character.posY -= offset;
 				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
 				SetTheCameraToMiddle("UP");
-				
+
+			}
+		}
+		if (kbState[SDL_SCANCODE_DOWN]) {
+			if (Current_Character.posY < 1440 - Character_Image_Size[1]) {
+				Current_Character.posY += offset;
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				SetTheCameraToMiddle("DOWN");
+			}
+		}
+		if (kbState[SDL_SCANCODE_SPACE]) {
+			if (Current_Character.posY > 0 + 1) {
+				Current_Character.posY -= offset;
+				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
+				SetTheCameraToMiddle("UP");
 				if (hasJumped == 0) {
 					hasJumped = 1;
 					/*
-						This will determine how high the character will jump up. - Kevin Lai
-						Equation is: Distance = jumpTimer * jump_speed
+					This will determine how high the character will jump up. - Kevin Lai
+					Equation is: Distance = jumpTimer * jump_speed
 
-						Example: jumpTimer = 27, jump_speed = 6 * gravity = 6 * (0.5) = 3
-						As a result, Distance = 27 * 3 = 81.
+					Example: jumpTimer = 27, jump_speed = 6 * gravity = 6 * (0.5) = 3
+					As a result, Distance = 27 * 3 = 81.
 					*/
 					jumpTimer = 27;
 
@@ -1647,17 +1758,9 @@ int main(void)
 					// player.positionY -= 75.0;
 					// updatePlayerPos(playerOne, playerOne.Character_Number[0], player.positionX, player.positionY);
 				}
-				
-			}
-		}
-		if (kbState[SDL_SCANCODE_DOWN]) {
-			if (Current_Character.posY < 1440 - spriteSize[1]) {
-				Current_Character.posY += offset;
-				updatePlayerPos(Players_Turn, Current_Character_number, Current_Character.posX, Current_Character.posY);
-				SetTheCameraToMiddle("DOWN");
-			}
-		}
 
+			}
+		}
 		//****** Camera setting ******//
 		if (kbState[SDL_SCANCODE_A]) {
 			if (camera.positionX > 0) {
@@ -1737,35 +1840,33 @@ int main(void)
 		}
 		
 
-		bool Testing = true;
-		if (!Testing)
-		{
-			Testing_SB = false;
-			Testing_DB = false;
-		}
-
 		/*
 		Current_Character.posX = player.positionX;
 		Current_Character.posY = player.positionY;
 		*/
 		//Testing background is for artist to do art testing
-		
-		
+		if (true) {
+			glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
+			glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
 
-		/*
-		if (Testing_DB) {
+			/*
+			if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
+				&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
+				glDrawSprite(Testing_Static_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Static_Background_size[0], Testing_Static_Background_size[1]);
+			}
+		
 			if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
-			glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
+				glDrawSprite(Testing_Destroyable_Background, 0 - camera.positionX, 0 - camera.positionY, Testing_Destroyable_Background_size[0], Testing_Destroyable_Background_size[1]);
 			}
+			*/
 		}
-		*/
 		
 		//Sprite drawing (Layer 3)
-		
+		/*
 		if (camera.positionY <= Current_Character.posY && Current_Character.posY <= camera.positionY + 480		//display image on-screen only
 			&& camera.positionX <= Current_Character.posX && Current_Character.posX <= camera.positionX + 640) {
-			
+			*/
 			//Jumping animation
 			if (hasJumped == 1) {
 				animDraw(player_Jumping, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1], deltaTime, 2);
@@ -1773,20 +1874,42 @@ int main(void)
 			else{
 
 				// drew only the first character of Player One and Two, Dont jump because it will revert to the previous code havent made it for jump yet
-				glDrawSprite(playerOne.characters[0].Character_Left[0], playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
-				glDrawSprite(playerTwo.characters[0].Character_Left[0], playerTwo.characters[0].posX - camera.positionX, playerTwo.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+				if (!playerOne.characters[0].isDead)
+				{
+					glDrawSprite(playerOne.Character_Current_Image, playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+					glDrawSprite(playerOne.characters[0].HP_Image[0], playerOne.characters[0].posX - camera.positionX - Alphabet_Size[0] / 2, playerOne.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+					glDrawSprite(playerOne.characters[0].HP_Image[1], playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+					glDrawSprite(playerOne.characters[0].HP_Image[2], playerOne.characters[0].posX - camera.positionX + Alphabet_Size[0] / 2, playerOne.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+					
+				}
+				else
+				{
+					//Art is not working
+					//animDraw(DeadthAnimation, playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1], deltaTime, 2);
+				}
+
+				if (!playerTwo.characters[0].isDead)
+				{
+					glDrawSprite(playerTwo.Character_Current_Image, playerTwo.characters[0].posX - camera.positionX, playerTwo.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
+					glDrawSprite(playerTwo.characters[0].HP_Image[0], playerTwo.characters[0].posX - camera.positionX - Alphabet_Size[0] / 2, playerTwo.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+					glDrawSprite(playerTwo.characters[0].HP_Image[1], playerTwo.characters[0].posX - camera.positionX, playerTwo.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+					glDrawSprite(playerTwo.characters[0].HP_Image[2], playerTwo.characters[0].posX - camera.positionX + Alphabet_Size[0] / 2, playerTwo.characters[0].posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
+
+				}
+				else
+				{
+					//Art is not working
+					//animDraw(DeadthAnimation, playerOne.characters[0].posX - camera.positionX, playerOne.characters[0].posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1], deltaTime, 2);
+				}
 				//glDrawSprite(Character_Current_Image, Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY, Character_Image_Size[0], Character_Image_Size[1]);
 			}
 
-
+			
 			
 			//draws Health
-			glDrawSprite(Current_Character.HP_Image[0], Current_Character.posX - camera.positionX - Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
-			glDrawSprite(Current_Character.HP_Image[1], Current_Character.posX - camera.positionX, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
-			glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 			//glDrawSprite(Current_Character.HP_Image[2], Current_Character.posX - camera.positionX + Alphabet_Size[0] / 2, Current_Character.posY - camera.positionY - Alphabet_Size[1] / 2, Alphabet_Size[0] / 2, Alphabet_Size[1] / 2);
 
-		}
+		//}
 		
 		/*
 		if (spriteTex_Current == Enemy_Right)
@@ -1817,14 +1940,18 @@ int main(void)
 		//Weapon drawing (Layer 3)
 
 		//Effect drawing (Layer 3)
-		for (int i = 0; i < DrawProjectiles.size(); i++) {
-			if (camera.positionY <= DrawProjectiles[i].posY && DrawProjectiles[i].posY <= camera.positionY + 480		//display image on-screen only
-				&& camera.positionX <= DrawProjectiles[i].posX && DrawProjectiles[i].posX <= camera.positionX + 640) {
-				//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
-				glDrawSprite(projectile_image, DrawProjectiles[i].posX + 5 - camera.positionX, DrawProjectiles[i].posY + 15 - camera.positionY, projectileSize[0], projectileSize[1]);
+		if (!playerOne.characters[0].isDead && !playerTwo.characters[0].isDead)
+		{
+			for (int i = 0; i < DrawProjectiles.size(); i++) {
+				if (camera.positionY <= DrawProjectiles[i].posY && DrawProjectiles[i].posY <= camera.positionY + 480		//display image on-screen only
+					&& camera.positionX <= DrawProjectiles[i].posX && DrawProjectiles[i].posX <= camera.positionX + 640) {
+					//printf("\n !!!ProjectileArrayIndex: %d", ProjectileArrayIndex);
+					glDrawSprite(projectile_image, DrawProjectiles[i].posX + 5 - camera.positionX, DrawProjectiles[i].posY + 15 - camera.positionY, projectileSize[0], projectileSize[1]);
+				}
 			}
-		}
 
+		}
+		
 		//Draw the timer on the bottom left corner
 		if (playerOne.allCharDead == false && playerTwo.allCharDead == false) {
 			glDrawSprite(TurnTimer[0], 0, 480 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
@@ -1838,6 +1965,7 @@ int main(void)
 				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Numbers_Image[1], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+	
 				if (Current_Character_number == 0) {
 					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
@@ -1850,12 +1978,14 @@ int main(void)
 				if (Current_Character_number == 3) {
 					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
+				
 			}
 			//Player 2's Characters 1-4
 			if (Players_Turn == 1) {
 				glDrawSprite(Alphabet_Image[15], 320 - Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Numbers_Image[2], 320, 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				glDrawSprite(Alphabet_Image[2], 320 + Alphabet_Size[0], 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
+				
 				if (Current_Character_number == 0) {
 					glDrawSprite(Numbers_Image[1], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
@@ -1868,6 +1998,7 @@ int main(void)
 				if (Current_Character_number == 3) {
 					glDrawSprite(Numbers_Image[4], 320 + (2 * Alphabet_Size[0]), 120 - Alphabet_Size[1], Alphabet_Size[0], Alphabet_Size[1]);
 				}
+				
 			}
 		}
 
