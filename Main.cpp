@@ -130,7 +130,7 @@ int animeDirTwo = 0;
 typedef struct Camera
 {
 	float positionX = 216.0f;
-	float positionY = 216.0f;
+	float positionY = 416.0f;
 }Camera;
 Camera camera;
 
@@ -1099,10 +1099,10 @@ int main(void)
 	{
 		playerOne.Character_Number[i] = i;
 		playerTwo.Character_Number[i] = i;
-		playerOne.characters[i].posX = 526.0f;
-		playerOne.characters[i].posY = 451.0f;
-		playerTwo.characters[i].posX = 626.0f;
-		playerTwo.characters[i].posY = 451.0f;
+		playerOne.characters[i].posX = 426.0f;
+		playerOne.characters[i].posY = 651.0f;
+		playerTwo.characters[i].posX = 726.0f;
+		playerTwo.characters[i].posY = 651.0f;
 	}
 
 	/* Load the texture */
